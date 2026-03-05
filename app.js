@@ -26,7 +26,7 @@ function buildGrid(events) {
 
   let today = new Date();
 
-  for (let i = 0; i < 14; i++) {
+  for (let i = 0; i < 15; i++) {
     let date = new Date();
 
     date.setDate(today.getDate() + i);
@@ -133,3 +133,7 @@ function rotateShift() {
 }
 
 setInterval(rotateShift, 300000); // every 5 minutes
+
+window.setTimeout( function() {
+  window.location.reload();
+}, 60*60000);
