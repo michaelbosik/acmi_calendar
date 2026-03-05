@@ -5,6 +5,15 @@ body {
   font-family: Montserrat, sans-serif;
 }
 
+body.shift1 { transform: translate(3px,2px); }
+body.shift2 { transform: translate(-3px,2px); }
+body.shift3 { transform: translate(2px,-3px); }
+body.shift4 { transform: translate(-2px,-2px); }
+
+body {
+transition: transform 2s ease;
+}
+
 .header {
   display: flex;
   justify-content: space-between;

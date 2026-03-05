@@ -1,10 +1,9 @@
 function updateClock() {
   const now = new Date();
-
-  document.getElementById("clock").textContent = now.toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  document.getElementById("clock").textContent = now.toLocaleTimeString(
+    "en-US",
+    { hour: "numeric", minute: "numeric", hour12: true },
+  );
 }
 
 setInterval(updateClock, 1000);
@@ -103,3 +102,34 @@ function getChannelClass(title) {
 
   return "";
 }
+
+// WEATHER
+async function fetchWeather() {
+  // const url = `https://api.openweathermap.org/data/2.5/weather?q=${CONFIG.CITY}&units=imperial&appid=${CONFIG.WEATHER_API_KEY}`;
+  const url = 'https://api.weather.gov/gridpoints/BOX/67,92/forecast/hourly'
+  const response = await fetch(url);
+  const data = await response.json();
+
+  let current_weather = data.properties.periods[0];
+
+  document.getElementById("weather-temp").textContent =
+    `${Math.round(current_weather.temperature)}°F`;
+
+  // document.getElementById("weather-icon").textContent =
+  //   current_weather;
+}
+
+fetchWeather();
+setInterval(fetchWeather, 600000); // refresh every 10 mins
+
+const shifts = ["shift1", "shift2", "shift3", "shift4"];
+
+function rotateShift() {
+  document.body.classList.remove(...shifts);
+
+  const next = shifts[Math.floor(Math.random() * shifts.length)];
+
+  document.body.classList.add(next);
+}
+
+setInterval(rotateShift, 300000); // every 5 minutes
