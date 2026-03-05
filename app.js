@@ -72,10 +72,10 @@ function buildGrid(events) {
 
       div.className = `event ${channelClass}`;
 
-      div.innerHTML = `<span class="event-time">${start.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      })}</span>
+      div.innerHTML = `<span class="event-time">${start.toLocaleTimeString(
+        "en-US",
+        { hour: "numeric", minute: "numeric", hour12: true },
+      )}</span>
 ${event.summary}`;
 
       eventsContainer.appendChild(div);
@@ -106,7 +106,7 @@ function getChannelClass(title) {
 // WEATHER
 async function fetchWeather() {
   // const url = `https://api.openweathermap.org/data/2.5/weather?q=${CONFIG.CITY}&units=imperial&appid=${CONFIG.WEATHER_API_KEY}`;
-  const url = 'https://api.weather.gov/gridpoints/BOX/67,92/forecast/hourly'
+  const url = "https://api.weather.gov/gridpoints/BOX/67,92/forecast/hourly";
   const response = await fetch(url);
   const data = await response.json();
 
@@ -134,6 +134,6 @@ function rotateShift() {
 
 setInterval(rotateShift, 300000); // every 5 minutes
 
-window.setTimeout( function() {
+window.setTimeout(function () {
   window.location.reload();
-}, 60*60000);
+}, 60 * 60000);
