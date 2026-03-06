@@ -44,6 +44,11 @@ transition: transform 2s ease;
   font-weight: 300;
 }
 
+.weather {
+  font-size: 48px;
+  font-weight: 300;
+}
+
 main {
   padding: 40px;
 }

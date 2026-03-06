@@ -45,8 +45,8 @@ function buildGrid(events) {
     header.className = "day-header";
 
     header.textContent = date.toLocaleDateString([], {
-      weekday: "short",
-      month: "short",
+      weekday: "long",
+      month: "long",
       day: "numeric",
     });
 
@@ -112,6 +112,10 @@ async function fetchWeather() {
 
   let current_weather = data.properties.periods[0];
 
+  data.properties.periods.forEach((i) => {
+    console.log(i.shortForecast);
+  });
+
   document.getElementById("weather-temp").textContent =
     `${Math.round(current_weather.temperature)}°F`;
 
@@ -122,6 +126,7 @@ async function fetchWeather() {
 fetchWeather();
 setInterval(fetchWeather, 600000); // refresh every 10 mins
 
+//Prevent pixel burn
 const shifts = ["shift1", "shift2", "shift3", "shift4"];
 
 function rotateShift() {
@@ -134,6 +139,7 @@ function rotateShift() {
 
 setInterval(rotateShift, 300000); // every 5 minutes
 
+//Reload Page
 window.setTimeout(function () {
   window.location.reload();
 }, 60 * 60000);
