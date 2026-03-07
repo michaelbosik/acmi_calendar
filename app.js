@@ -6,9 +6,7 @@ function updateClock() {
   );
 }
 
-setInterval(updateClock, 1000);
-updateClock();
-
+// Get events from configured calendars
 async function fetchEvents() {
   const now = new Date().toISOString();
 
@@ -21,16 +19,24 @@ async function fetchEvents() {
 }
 
 function buildGrid(events) {
+  function getEventClass(title) {
+    title = title.toLowerCase();
+
+    if (title.includes("public")) return "public";
+    if (title.includes("education")) return "education";
+    if (title.includes("government")) return "government";
+    return "";
+  }
+
   const grid = document.getElementById("schedule-grid");
   grid.innerHTML = "";
 
   let today = new Date();
 
-  for (let i = 0; i < 15; i++) {
+  const MAX_DAYS = 15; // Amount of days shown
+  for (let i = 0; i < MAX_DAYS; i++) {
     let date = new Date();
-
     date.setDate(today.getDate() + i);
-
     let dateKey = date.toISOString().split("T")[0];
 
     let dayEvents = events.filter((e) => {
@@ -43,18 +49,17 @@ function buildGrid(events) {
 
     let header = document.createElement("div");
     header.className = "day-header";
-
     header.textContent = date.toLocaleDateString([], {
       weekday: "long",
       month: "long",
       day: "numeric",
     });
-
     box.appendChild(header);
 
     let eventsContainer = document.createElement("div");
     eventsContainer.className = "events";
 
+    // No Events
     if (dayEvents.length === 0) {
       let none = document.createElement("div");
       none.className = "no-events";
@@ -66,69 +71,75 @@ function buildGrid(events) {
     dayEvents.forEach((event) => {
       let start = new Date(event.start.dateTime || event.start.date);
 
-      let channelClass = getChannelClass(event.summary);
-
       let div = document.createElement("div");
-
-      div.className = `event ${channelClass}`;
-
+      div.className = `event ${getEventClass(event.summary)}`;
       div.innerHTML = `<span class="event-time">${start.toLocaleTimeString(
         "en-US",
         { hour: "numeric", minute: "numeric", hour12: true },
       )}</span>
 ${event.summary}`;
-
       eventsContainer.appendChild(div);
     });
 
     box.appendChild(eventsContainer);
-
     grid.appendChild(box);
   }
 }
 
-fetchEvents();
-
-setInterval(fetchEvents, 300000);
-
-function getChannelClass(title) {
-  title = title.toLowerCase();
-
-  if (title.includes("public")) return "public";
-
-  if (title.includes("education")) return "education";
-
-  if (title.includes("government")) return "government";
-
-  return "";
-}
-
-// WEATHER
+// Use weather.gov API to determine weather, set temp and icon
 async function fetchWeather() {
-  // const url = `https://api.openweathermap.org/data/2.5/weather?q=${CONFIG.CITY}&units=imperial&appid=${CONFIG.WEATHER_API_KEY}`;
   const url = "https://api.weather.gov/gridpoints/BOX/67,92/forecast/hourly";
   const response = await fetch(url);
   const data = await response.json();
 
-  let current_weather = data.properties.periods[0];
+  function getWeatherIcon(current_weather) {
+    function parseWindSpeed(speedString) {
+      const match = speedString.match(/\d+/);
+      return match ? parseInt(match[0]) : 0;
+    }
+    const isDaytime = current_weather.isDaytime;
+    const windSpeed = parseWindSpeed(current_weather.windSpeed);
+    const text = current_weather.shortForecast.toLowerCase();
 
-  data.properties.periods.forEach((i) => {
-    console.log(i.shortForecast);
-  });
+    if (windSpeed >= 40) return "hurricane";
+    if (text.includes("thunder") || text.includes("storm")) return "cloud-bolt";
+    if (text.includes("snow") || text.includes("flurries")) return "snowflake";
+    if (text.includes("showers") || text.includes("heavy rain"))
+      return "cloud-showers-heavy";
+    if (text.includes("rain") || text.includes("drizzle")) {
+      if (text.includes("sun") || text.includes("partly"))
+        return isDaytime ? "cloud-sun-rain" : "cloud-moon-rain";
+      return "cloud-rain";
+    }
+    if (text.includes("fog") || text.includes("haze") || text.includes("mist"))
+      return "smog";
+    if (windSpeed >= 20) return "wind";
+    if (text.includes("partly")) {
+      return isDaytime ? "cloud-sun" : "cloud-moon";
+    }
+    if (text.includes("cloud")) return "cloud";
+    if (
+      text.includes("clear") ||
+      text.includes("sunny") ||
+      text.includes("mostly sunny")
+    ) {
+      return isDaytime ? "sun" : "moon";
+    }
+    return isDaytime ? "sun" : "moon";
+  }
+
+  let current_weather = data.properties.periods[0];
+  let icon = getWeatherIcon(current_weather);
 
   document.getElementById("weather-temp").textContent =
     `${Math.round(current_weather.temperature)}°F`;
 
-  // document.getElementById("weather-icon").textContent =
-  //   current_weather;
+  document.getElementById("weather-icon").innerHTML =
+    `<i class="fa-solid fa-${icon}"></i>`;
 }
 
-fetchWeather();
-setInterval(fetchWeather, 600000); // refresh every 10 mins
-
-//Prevent pixel burn
+//Shift page by a few pixels to prevent burn
 const shifts = ["shift1", "shift2", "shift3", "shift4"];
-
 function rotateShift() {
   document.body.classList.remove(...shifts);
 
@@ -137,9 +148,16 @@ function rotateShift() {
   document.body.classList.add(next);
 }
 
-setInterval(rotateShift, 300000); // every 5 minutes
+updateClock();
+fetchEvents();
+fetchWeather();
 
-//Reload Page
+setInterval(updateClock, 1000);
+setInterval(fetchEvents, 300000);
+setInterval(fetchWeather, 600000);
+setInterval(rotateShift, 300000);
+
+//Reload page every hour
 window.setTimeout(function () {
   window.location.reload();
 }, 60 * 60000);
