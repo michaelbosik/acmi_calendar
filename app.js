@@ -1,3 +1,8 @@
+/**
+ *  ACMI Calendar Interface
+ *  Created by Michael Bosik - 2026
+ */
+
 function updateClock() {
   const now = new Date();
   document.getElementById("clock").textContent = now.toLocaleTimeString(
@@ -9,81 +14,19 @@ function updateClock() {
 // Get events from configured calendars
 async function fetchEvents() {
   const now = new Date().toISOString();
+  let allResults = [];
 
-  const url = `https://www.googleapis.com/calendar/v3/calendars/${CONFIG.CALENDAR_ID}/events?key=${CONFIG.GOOGLE_API_KEY}&timeMin=${now}&singleEvents=true&orderBy=startTime&maxResults=100`;
+  for (const [service, calendarID] of Object.entries(CONFIG.CALENDAR_IDS)) {
+    const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarID)}/events?key=${CONFIG.GOOGLE_API_KEY}&timeMin=${now}&singleEvents=true&orderBy=startTime&maxResults=100`;
+    const response = await fetch(url);
+    const data = await response.json();
 
-  const res = await fetch(url);
-  const data = await res.json();
-
-  buildGrid(data.items);
-}
-
-function buildGrid(events) {
-  function getEventClass(title) {
-    title = title.toLowerCase();
-
-    if (title.includes("public")) return "public";
-    if (title.includes("education")) return "education";
-    if (title.includes("government")) return "government";
-    return "";
-  }
-
-  const grid = document.getElementById("schedule-grid");
-  grid.innerHTML = "";
-
-  let today = new Date();
-
-  const MAX_DAYS = 15; // Amount of days shown
-  for (let i = 0; i < MAX_DAYS; i++) {
-    let date = new Date();
-    date.setDate(today.getDate() + i);
-    let dateKey = date.toISOString().split("T")[0];
-
-    let dayEvents = events.filter((e) => {
-      let start = e.start.dateTime || e.start.date;
-      return start.startsWith(dateKey);
-    });
-
-    let box = document.createElement("div");
-    box.className = "day-box";
-
-    let header = document.createElement("div");
-    header.className = "day-header";
-    header.textContent = date.toLocaleDateString([], {
-      weekday: "long",
-      month: "long",
-      day: "numeric",
-    });
-    box.appendChild(header);
-
-    let eventsContainer = document.createElement("div");
-    eventsContainer.className = "events";
-
-    // No Events
-    if (dayEvents.length === 0) {
-      let none = document.createElement("div");
-      none.className = "no-events";
-      none.textContent = "No events";
-
-      eventsContainer.appendChild(none);
+    if (data.items) {
+      allResults = allResults.concat(data.items);
     }
-
-    dayEvents.forEach((event) => {
-      let start = new Date(event.start.dateTime || event.start.date);
-
-      let div = document.createElement("div");
-      div.className = `event ${getEventClass(event.summary)}`;
-      div.innerHTML = `<span class="event-time">${start.toLocaleTimeString(
-        "en-US",
-        { hour: "numeric", minute: "numeric", hour12: true },
-      )}</span>
-${event.summary}`;
-      eventsContainer.appendChild(div);
-    });
-
-    box.appendChild(eventsContainer);
-    grid.appendChild(box);
   }
+
+  buildGrid(allResults);
 }
 
 // Use weather.gov API to determine weather, set temp and icon
@@ -136,6 +79,112 @@ async function fetchWeather() {
 
   document.getElementById("weather-icon").innerHTML =
     `<i class="fa-solid fa-${icon}"></i>`;
+}
+
+function buildGrid(events) {
+  function getEventClass(title) {
+    title = title.toLowerCase();
+
+    if (title.includes("public")) return "public";
+    if (title.includes("education")) return "education";
+    if (title.includes("government")) return "government";
+    return "";
+  }
+
+  function createDayBox(grid, date, dayEvents) {
+    function appendHeader(date) {
+      let header = document.createElement("div");
+      header.className = "day-header";
+
+      /** TODO - Format dayBox header so date doesnt wrap inconsistently */
+      if (isToday) {
+        header.textContent += "Today - ";
+        box.classList.add("today");
+      }
+      header.textContent += date.toLocaleDateString([], {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+      });
+      return header;
+    }
+
+    function appendEvents(dayEvents) {
+      function createEvent(event) {
+        let start = new Date(event.start.dateTime || event.start.date);
+
+        let div = document.createElement("div");
+        div.className = `event ${getEventClass(event.summary)}`;
+        div.innerHTML = !event.start.dateTime
+          ? `<span class="event-time">All Day</span>${event.summary}`
+          : `<span class="event-time">${start.toLocaleTimeString("en-US", {
+              hour: "numeric",
+              minute: "numeric",
+              hour12: true,
+            })}</span>
+${event.summary}`;
+        return div;
+      }
+
+      const eventsContainer = document.createElement("div");
+      eventsContainer.className = "events";
+
+      const inner = document.createElement("div");
+      inner.className = "events-inner";
+
+      if (dayEvents.length === 0) {
+        let none = document.createElement("div");
+        none.className = "no-events";
+        none.textContent = "No events";
+
+        inner.appendChild(none);
+      }
+
+      dayEvents.forEach((event) => {
+        inner.appendChild(createEvent(event));
+      });
+
+      /** TODO - Scrolling animation for days with a lot of events */
+      // const speed = Math.max(dayEvents.length * 4, 12);
+      // inner.style.animationDuration = speed + "s";
+      // if (dayEvents.length <= 2) {
+      //   inner.style.animation = "none";
+      // }
+
+      eventsContainer.appendChild(inner);
+
+      return eventsContainer;
+    }
+
+    let isToday = date.toDateString() === new Date().toDateString();
+    let box = document.createElement("div");
+    box.className = "day-box";
+    box.appendChild(appendHeader(date));
+    box.appendChild(appendEvents(dayEvents));
+    grid.appendChild(box);
+  }
+
+  const grid = document.getElementById("schedule-grid");
+  grid.innerHTML = "";
+
+  let today = new Date();
+
+  const TOTAL_DAYS = 15;
+  for (let i = 0; i < TOTAL_DAYS; i++) {
+    let date = new Date();
+    if (i !== 0) {
+      date.setDate(today.getDate() + i);
+    }
+
+    let dateKey = date.toISOString().split("T")[0];
+
+    let dayEvents = events.filter((e) => {
+      let start = e.start.dateTime || e.start.date;
+      return start.startsWith(dateKey);
+    });
+
+    createDayBox(grid, date, dayEvents);
+  }
 }
 
 //Shift page by a few pixels to prevent burn
