@@ -93,6 +93,7 @@ function buildGrid(events) {
 
   function createDayBox(grid, date, dayEvents) {
     function appendHeader(date) {
+      let isToday = date.toDateString() === new Date().toDateString();
       let header = document.createElement("div");
       header.className = "day-header";
 
@@ -156,7 +157,6 @@ ${event.summary}`;
       return eventsContainer;
     }
 
-    let isToday = date.toDateString() === new Date().toDateString();
     let box = document.createElement("div");
     box.className = "day-box";
     box.appendChild(appendHeader(date));
@@ -172,11 +172,9 @@ ${event.summary}`;
   const TOTAL_DAYS = 15;
   for (let i = 0; i < TOTAL_DAYS; i++) {
     let date = new Date();
-    if (i !== 0) {
-      date.setDate(today.getDate() + i);
-    }
+    date.setDate(today.getDate() + i);
 
-    let dateKey = date.toISOString().split("T")[0];
+    let dateKey = date.toISOString().split("T")[0]; //dateKey is incorrect after 7PM because of timezone -5hrs. look more into date.toDateString/toISOstring
 
     let dayEvents = events.filter((e) => {
       let start = e.start.dateTime || e.start.date;
