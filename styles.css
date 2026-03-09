@@ -77,6 +77,11 @@ body {
   animation: floatIcon 6s ease-in-out infinite;
 }
 
+.fa-sun{ color:#ffd166 }
+.fa-moon{ color:#9bb7ff }
+.fa-cloud{ color:#cfd8dc }
+.fa-cloud-rain{ color:#7ec8e3 }
+
 @keyframes floatIcon {
   0% {
     transform: translateY(0px);
@@ -295,5 +300,20 @@ main {
 
   100% {
     transform: translateY(-50%);
+  }
+}
+
+.day-box{
+  animation:fadeIn .6s ease;
+}
+
+@keyframes fadeIn{
+  from{
+    opacity:0;
+    transform:translateY(10px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
   }
 }

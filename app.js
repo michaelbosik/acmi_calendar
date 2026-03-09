@@ -29,6 +29,25 @@ async function fetchEvents() {
   buildGrid(allResults);
 }
 
+async function fetchWordOfDay() {
+  try {
+    const response = await fetch(
+      `https://api.wordnik.com/v4/words.json/wordOfTheDay?api_key=${CONFIG.WORDNIK}`
+    );
+
+    const data = await response.json();
+
+    const word = data.word;
+    const definition = data.definitions?.[0]?.text || "";
+
+    document.getElementById("word").textContent = word;
+    document.getElementById("definition").textContent = definition;
+
+  } catch (err) {
+    console.log("Word API failed", err);
+  }
+}
+
 // Use weather.gov API to determine weather, set temp and icon
 async function fetchWeather() {
   const url = "https://api.weather.gov/gridpoints/BOX/67,92/forecast/hourly";
@@ -82,6 +101,24 @@ async function fetchWeather() {
 }
 
 function buildGrid(events) {
+
+  function toISOLocal(d) {
+    var z  = n =>  ('0' + n).slice(-2);
+    var zz = n => ('00' + n).slice(-3);
+    var off = d.getTimezoneOffset();
+    var sign = off > 0? '-' : '+';
+    off = Math.abs(off);
+
+    return d.getFullYear() + '-'
+           + z(d.getMonth()+1) + '-' +
+           z(d.getDate()) + 'T' +
+           z(d.getHours()) + ':'  + 
+           z(d.getMinutes()) + ':' +
+           z(d.getSeconds()) + '.' +
+           zz(d.getMilliseconds()) +
+           sign + z(off/60|0) + ':' + z(off%60); 
+  }
+
   function getEventClass(title) {
     title = title.toLowerCase();
 
@@ -174,7 +211,7 @@ ${event.summary}`;
     let date = new Date();
     date.setDate(today.getDate() + i);
 
-    let dateKey = date.toISOString().split("T")[0]; //dateKey is incorrect after 7PM because of timezone -5hrs. look more into date.toDateString/toISOstring
+    let dateKey = toISOLocal(date).split("T")[0];
 
     let dayEvents = events.filter((e) => {
       let start = e.start.dateTime || e.start.date;
@@ -198,6 +235,9 @@ function rotateShift() {
 updateClock();
 fetchEvents();
 fetchWeather();
+
+fetchWordOfDay();
+setInterval(fetchWordOfDay, 86400000); // once per day
 
 setInterval(updateClock, 1000);
 setInterval(fetchEvents, 300000);
