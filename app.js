@@ -240,9 +240,9 @@ fetchWordOfDay();
 setInterval(fetchWordOfDay, 86400000); // once per day
 
 setInterval(updateClock, 1000);
-setInterval(fetchEvents, 300000);
-setInterval(fetchWeather, 600000);
-setInterval(rotateShift, 300000);
+setInterval(fetchEvents, 30 * 60000);
+setInterval(fetchWeather, 30 * 60000);
+setInterval(rotateShift, 10 * 60000);
 
 //Reload page every hour
 window.setTimeout(function () {
