@@ -6,5 +6,13 @@ const CONFIG = {
     HOLIDAY_CALENDAR_ID: "en.usa#holiday@group.v.calendar.google.com",
     SPORTS_CALENDAR_ID: "c_bh5arljqqeubqreqjjgg1lts98@group.calendar.google.com"
   },
-  WORDNIK: ""
+  WORDNIK: "",
+  COLORS: {
+    green: "#73bf44",
+    red: "#ef4723",
+    purple: "#a5629b",
+    yellow: "#e4a224",
+    blue: "#518aa8",
+    white: "#ffffff"
+  }
 };

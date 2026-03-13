@@ -119,14 +119,13 @@ function buildGrid(events) {
            sign + z(off/60|0) + ':' + z(off%60); 
   }
 
-  function getEventClass(title) {
-    title = title.toLowerCase();
-
-    if (title.includes("public")) return "public";
-    if (title.includes("education")) return "education";
-    if (title.includes("government")) return "government";
-    return "";
-  }
+  // function getEventClass(title) {
+  //   title = title.toLowerCase();
+  //   if (title.includes("public")) return "public";
+  //   if (title.includes("education")) return "education";
+  //   if (title.includes("government")) return "government";
+  //   return "";
+  // }
 
   function createDayBox(grid, date, dayEvents) {
     function appendHeader(date) {
@@ -149,10 +148,28 @@ function buildGrid(events) {
 
     function appendEvents(dayEvents) {
       function createEvent(event) {
+        function getColor(calendar){
+          switch(calendar){
+            case 'ACMi Members Calendar':
+              return CONFIG.COLORS.green;
+            case 'Holidays in United States':
+              return CONFIG.COLORS.purple;
+            case 'Sports':
+              return CONFIG.COLORS.blue;
+            case '':
+              return CONFIG.COLORS.red;
+            case '':
+              return CONFIG.COLORS.yellow;
+            default:
+              return CONFIG.COLORS.white;
+          }
+        }
+
         let start = new Date(event.start.dateTime || event.start.date);
 
         let div = document.createElement("div");
-        div.className = `event ${getEventClass(event.summary)}`;
+        div.className = `event ${event.organizer.displayName}`;
+        div.style = `border-left: 6px solid ${getColor(event.organizer.displayName)};`
         div.innerHTML = !event.start.dateTime
           ? `<span class="event-time">All Day</span>${event.summary}`
           : `<span class="event-time">${start.toLocaleTimeString("en-US", {

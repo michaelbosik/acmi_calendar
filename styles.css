@@ -195,7 +195,7 @@ main {
 
   background: #2a2a2a;
 
-  border-left: 6px solid #73bf44;
+  /* border-left: 6px solid #73bf44; */
 
   font-weight: 300;
   font-size: clamp(10px, 1.2vw, 20px);
@@ -277,11 +277,11 @@ main {
 
 @keyframes tickerScroll {
   0% {
-    transform: translateX(100%);
+    transform: translateX(120%);
   }
 
   100% {
-    transform: translateX(-100%);
+    transform: translateX(-120%);
   }
 }
 
