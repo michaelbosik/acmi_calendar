@@ -32,7 +32,7 @@ async function fetchEvents() {
 async function fetchWordOfDay() {
   try {
     const response = await fetch(
-      `https://api.wordnik.com/v4/words.json/wordOfTheDay?api_key=${CONFIG.WORDNIK}`
+      `https://api.wordnik.com/v4/words.json/wordOfTheDay?api_key=${CONFIG.WORDNIK}`,
     );
 
     const data = await response.json();
@@ -40,9 +40,10 @@ async function fetchWordOfDay() {
     const word = data.word;
     const definition = data.definitions?.[0]?.text || "";
 
-    document.getElementById("word").textContent = word;
-    document.getElementById("definition").textContent = definition;
-
+    document.getElementById("wordoftheday").textContent =
+      `Word of the Day -- ${word} - ${definition} --`;
+    document.getElementById("wordoftheday2").textContent =
+      `Word of the Day -- ${word} - ${definition} --`;
   } catch (err) {
     console.log("Word API failed", err);
   }
@@ -101,22 +102,32 @@ async function fetchWeather() {
 }
 
 function buildGrid(events) {
-
   function toISOLocal(d) {
-    var z  = n =>  ('0' + n).slice(-2);
-    var zz = n => ('00' + n).slice(-3);
+    var z = (n) => ("0" + n).slice(-2);
+    var zz = (n) => ("00" + n).slice(-3);
     var off = d.getTimezoneOffset();
-    var sign = off > 0? '-' : '+';
+    var sign = off > 0 ? "-" : "+";
     off = Math.abs(off);
 
-    return d.getFullYear() + '-'
-           + z(d.getMonth()+1) + '-' +
-           z(d.getDate()) + 'T' +
-           z(d.getHours()) + ':'  + 
-           z(d.getMinutes()) + ':' +
-           z(d.getSeconds()) + '.' +
-           zz(d.getMilliseconds()) +
-           sign + z(off/60|0) + ':' + z(off%60); 
+    return (
+      d.getFullYear() +
+      "-" +
+      z(d.getMonth() + 1) +
+      "-" +
+      z(d.getDate()) +
+      "T" +
+      z(d.getHours()) +
+      ":" +
+      z(d.getMinutes()) +
+      ":" +
+      z(d.getSeconds()) +
+      "." +
+      zz(d.getMilliseconds()) +
+      sign +
+      z((off / 60) | 0) +
+      ":" +
+      z(off % 60)
+    );
   }
 
   // function getEventClass(title) {
@@ -148,37 +159,44 @@ function buildGrid(events) {
 
     function appendEvents(dayEvents) {
       function createEvent(event) {
-        function getColor(calendar){
-          switch(calendar){
-            case 'ACMi Members Calendar':
+        function getColor(calendar) {
+          switch (calendar) {
+            case "ACMi Members Calendar":
               return CONFIG.COLORS.green;
-            case 'Holidays in United States':
+            case "Holidays in United States":
               return CONFIG.COLORS.purple;
-            case 'Sports':
+            case "Sports":
               return CONFIG.COLORS.blue;
-            case '':
+            case "":
               return CONFIG.COLORS.red;
-            case '':
+            case "":
               return CONFIG.COLORS.yellow;
             default:
               return CONFIG.COLORS.white;
           }
         }
 
+        let summary = document.createElement("div");
         let start = new Date(event.start.dateTime || event.start.date);
 
-        let div = document.createElement("div");
-        div.className = `event ${event.organizer.displayName}`;
-        div.style = `border-left: 6px solid ${getColor(event.organizer.displayName)};`
-        div.innerHTML = !event.start.dateTime
-          ? `<span class="event-time">All Day</span>${event.summary}`
+        summary.innerHTML = !event.start.dateTime
+          ? `<span class="event-time">All Day</span>`
           : `<span class="event-time">${start.toLocaleTimeString("en-US", {
               hour: "numeric",
               minute: "numeric",
               hour12: true,
-            })}</span>
-${event.summary}`;
-        return div;
+            })}</span>`;
+
+        if (!event.organizer || !event.summary) {
+          summary.className = "event hidden";
+          summary.innerHTML += "No Event Details";
+          summary.style = `border-left: 6px solid gray`;
+        } else {
+          summary.className = `event ${event.organizer.displayName}`;
+          summary.innerHTML += `${event.summary}`
+          summary.style = `border-left: 6px solid ${getColor(event.organizer.displayName)};`;
+        }
+        return summary;
       }
 
       const eventsContainer = document.createElement("div");

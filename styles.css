@@ -81,10 +81,18 @@ body {
   animation: floatIcon 6s ease-in-out infinite;
 }
 
-.fa-sun{ color:#ffd166 }
-.fa-moon{ color:#9bb7ff }
-.fa-cloud{ color:#cfd8dc }
-.fa-cloud-rain{ color:#7ec8e3 }
+.fa-sun {
+  color: #ffd166;
+}
+.fa-moon {
+  color: #9bb7ff;
+}
+.fa-cloud {
+  color: #cfd8dc;
+}
+.fa-cloud-rain {
+  color: #7ec8e3;
+}
 
 @keyframes floatIcon {
   0% {
@@ -251,37 +259,46 @@ main {
   height: 45px;
 
   background: #111;
-
   border-top: 3px solid #73bf44;
 
   overflow: hidden;
-
   display: flex;
-  flex: 0 0 auto;
   align-items: center;
 }
 
+/* .ticker {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 40px,
+    black calc(100% - 40px),
+    transparent
+  );
+} */
+
 .ticker-track {
-  white-space: nowrap;
+  display: flex;
+  width: max-content;
 
   animation: tickerScroll 40s linear infinite;
-
-  font-size: 18px;
 }
 
-.ticker-track span {
-  margin-right: 80px;
+.ticker-content {
+  display: flex;
+  white-space: nowrap;
+}
 
-  color: #ffffff;
+.ticker-content span {
+  margin-right: 80px;
 }
 
 @keyframes tickerScroll {
   0% {
-    transform: translateX(120%);
+    transform: translateX(0);
   }
 
   100% {
-    transform: translateX(-120%);
+    transform: translateX(-50%);
   }
 }
 
@@ -307,17 +324,17 @@ main {
   }
 }
 
-.day-box{
-  animation:fadeIn .6s ease;
+.day-box {
+  animation: fadeIn 0.6s ease;
 }
 
-@keyframes fadeIn{
-  from{
-    opacity:0;
-    transform:translateY(10px);
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
-  to{
-    opacity:1;
-    transform:translateY(0);
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
