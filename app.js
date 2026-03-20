@@ -189,18 +189,18 @@ function buildGrid(events) {
       header.className = "day-header";
 
       /** TODO - Format dayBox header so date doesnt wrap inconsistently */
+      header.textContent += date.toLocaleDateString([], {
+        // weekday: "short",
+        month: "long",
+        day: "numeric",
+      });
       if (isToday) {
-        header.textContent += "Today - ";
+        header.textContent += "\nToday";
         box.classList.add("today");
       }
       if (isPast) {
         box.classList.add("past");
       }
-      header.textContent += date.toLocaleDateString([], {
-        weekday: "short",
-        month: "numeric",
-        day: "numeric",
-      });
       return header;
     }
 
@@ -317,22 +317,24 @@ function rotateShift() {
   document.body.classList.add(next);
 }
 
-updateClock();
-fetchEvents();
-fetchWeather();
-fetchUpcoming().then((upcoming) => {
-  renderUpcoming(upcoming);
-});
+function fetchAll() {
+  fetchWordOfDay();
+  fetchEvents();
+  fetchWeather();
+  fetchUpcoming().then((upcoming) => {
+    renderUpcoming(upcoming);
+  });
+}
 
-fetchWordOfDay();
-setInterval(fetchWordOfDay, 86400000); // once per day
+updateClock();
+
+fetchAll();
+setInterval(fetchAll, 60000 * 30);
 
 setInterval(updateClock, 1000);
-setInterval(fetchEvents, 30 * 60000);
-setInterval(fetchWeather, 30 * 60000);
 setInterval(rotateShift, 10 * 60000);
 
 //Reload page every hour
-window.setTimeout(function () {
-  window.location.reload();
-}, 60 * 60000);
+// window.setTimeout(function () {
+//   window.location.reload();
+// }, 60 * 60000);

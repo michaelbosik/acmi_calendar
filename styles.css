@@ -136,7 +136,13 @@ main {
   display: flex;
   flex-direction: column;
 
-  gap: 0.4vh;
+  gap: 0.7vh;
+}
+
+.upcoming h3 {
+  /* font-weight: 300; */
+  font-size: clamp(20px, 1vw, 30px);
+  color: #73bf44;
 }
 
 .upcoming-item {
@@ -149,7 +155,15 @@ main {
   /* border-left: 6px solid #73bf44; */
 
   font-weight: 300;
-  font-size: clamp(10px, 0.7vw, 20px);
+  font-size: clamp(10px, 1vw, 20px);
+}
+
+.upcoming-item .title {
+  font-size: clamp(14px, 0.7vw, 26px);
+  font-weight: 600;
+  margin-bottom: 0.5vh;
+
+  color: #73bf44;
 }
 
 .upcoming-item.high {
