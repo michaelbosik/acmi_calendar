@@ -108,7 +108,9 @@ body {
 
 main {
   padding: 40px;
-  height: 100vh;
+  height: 80vh;
+  display: flex;
+  flex-direction: row;
 }
 
 .maingrid {
@@ -120,7 +122,7 @@ main {
 
 .upcoming {
   width: 20%;
-  height: 80vh;
+  height: 50vh;
 
   background: #1c1c1c;
 
@@ -132,7 +134,6 @@ main {
   border-radius: 8px;
 
   display: flex;
-
   flex-direction: column;
 
   gap: 0.4vh;
@@ -221,21 +222,14 @@ main {
 .day-box.today {
   border-top: 6px solid #e4a224;
 
-  background: rgba(228, 162, 36, 0.1);
-
   box-shadow: 0 0 20px rgba(228, 162, 36, 0.5);
+
+  animation: todayGlow 4s ease-in-out infinite;
 }
 
 .day-box.today .day-title {
   font-weight: 700;
   font-size: 1.2em;
-}
-
-.day-box.today {
-  color: white;
-  box-shadow: 0 0 15px rgba(191, 170, 68, 0.5);
-
-  animation: todayGlow 4s ease-in-out infinite;
 }
 
 @keyframes todayGlow {
