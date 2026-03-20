@@ -11,13 +11,47 @@ function updateClock() {
   );
 }
 
+async function fetchUpcoming() {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.EVENTS_SHEET_ID}/values/${CONFIG.EVENTS_SHEET_RANGE}?key=${CONFIG.GOOGLE_API_KEY}`;
+
+  const res = await fetch(url);
+  const data = await res.json();
+
+  return data.values.map((row) => ({
+    title: row[0],
+    date: row[1],
+    type: row[2],
+    priority: row[3],
+    description: row[4],
+  }));
+}
+
+function renderUpcoming(items) {
+  const container = document.getElementById("upcoming");
+  container.innerHTML = "<h3>Crew Calls</h3>";
+
+  items.slice(0, 5).forEach((item) => {
+    const div = document.createElement("div");
+    div.className = `upcoming-item ${item.priority?.toLowerCase()}`;
+
+    div.innerHTML = `
+      <div class="title">${item.title}</div>
+      <div class="meta">${item.date} • ${item.type}</div>
+      <div class="desc">${item.description}</div>
+    `;
+
+    container.appendChild(div);
+  });
+}
+
 // Get events from configured calendars
 async function fetchEvents() {
-  const now = new Date().toISOString();
+  const now = new Date();
+  const sunday = getLastSunday(now).toISOString();
   let allResults = [];
 
   for (const [service, calendarID] of Object.entries(CONFIG.CALENDAR_IDS)) {
-    const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarID)}/events?key=${CONFIG.GOOGLE_API_KEY}&timeMin=${now}&singleEvents=true&orderBy=startTime&maxResults=100`;
+    const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarID)}/events?key=${CONFIG.GOOGLE_API_KEY}&timeMin=${sunday}&singleEvents=true&orderBy=startTime&maxResults=100`;
     const response = await fetch(url);
     const data = await response.json();
 
@@ -29,6 +63,7 @@ async function fetchEvents() {
   buildGrid(allResults);
 }
 
+// TODO - only get relevent terms
 async function fetchWordOfDay() {
   try {
     const response = await fetch(
@@ -101,6 +136,13 @@ async function fetchWeather() {
     `<i class="fa-solid fa-${icon}"></i>`;
 }
 
+function getLastSunday(now) {
+  const d = new Date(now);
+  d.setDate(d.getDate() - d.getDay());
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
 function buildGrid(events) {
   function toISOLocal(d) {
     var z = (n) => ("0" + n).slice(-2);
@@ -140,7 +182,9 @@ function buildGrid(events) {
 
   function createDayBox(grid, date, dayEvents) {
     function appendHeader(date) {
-      let isToday = date.toDateString() === new Date().toDateString();
+      const now = new Date();
+      const isToday = date.toDateString() === now.toDateString();
+      const isPast = date < new Date(now.setHours(0, 0, 0, 0));
       let header = document.createElement("div");
       header.className = "day-header";
 
@@ -149,9 +193,12 @@ function buildGrid(events) {
         header.textContent += "Today - ";
         box.classList.add("today");
       }
+      if (isPast) {
+        box.classList.add("past");
+      }
       header.textContent += date.toLocaleDateString([], {
-        weekday: "long",
-        month: "long",
+        weekday: "short",
+        month: "numeric",
         day: "numeric",
       });
       return header;
@@ -193,7 +240,7 @@ function buildGrid(events) {
           summary.style = `border-left: 6px solid gray`;
         } else {
           summary.className = `event ${event.organizer.displayName}`;
-          summary.innerHTML += `${event.summary}`
+          summary.innerHTML += `${event.summary}`;
           summary.style = `border-left: 6px solid ${getColor(event.organizer.displayName)};`;
         }
         return summary;
@@ -211,6 +258,8 @@ function buildGrid(events) {
         none.textContent = "No events";
 
         inner.appendChild(none);
+      } else if (dayEvents.length > 3) {
+        inner.classList += " events-scroll";
       }
 
       dayEvents.forEach((event) => {
@@ -240,11 +289,12 @@ function buildGrid(events) {
   grid.innerHTML = "";
 
   let today = new Date();
+  const sunday = getLastSunday(today);
 
-  const TOTAL_DAYS = 15;
+  const TOTAL_DAYS = 28;
   for (let i = 0; i < TOTAL_DAYS; i++) {
-    let date = new Date();
-    date.setDate(today.getDate() + i);
+    let date = new Date(sunday);
+    date.setDate(sunday.getDate() + i);
 
     let dateKey = toISOLocal(date).split("T")[0];
 
@@ -270,6 +320,9 @@ function rotateShift() {
 updateClock();
 fetchEvents();
 fetchWeather();
+fetchUpcoming().then((upcoming) => {
+  renderUpcoming(upcoming);
+});
 
 fetchWordOfDay();
 setInterval(fetchWordOfDay, 86400000); // once per day

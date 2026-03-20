@@ -111,6 +111,77 @@ main {
   height: 100vh;
 }
 
+.maingrid {
+  display: inline-flex;
+  width: 100%;
+  gap: 30px;
+  align-content: space-between;
+}
+
+.upcoming {
+  width: 20%;
+  height: 80vh;
+
+  background: #1c1c1c;
+
+  border-left: 5px solid #ef4723;
+
+  padding: 16px;
+  margin: auto;
+
+  border-radius: 8px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 0.4vh;
+}
+
+.upcoming-item {
+  padding: 0.3vh 0.4vw;
+
+  border-radius: 0.4vh;
+
+  background: #2a2a2a;
+
+  /* border-left: 6px solid #73bf44; */
+
+  font-weight: 300;
+  font-size: clamp(10px, 0.7vw, 20px);
+}
+
+.upcoming-item.high {
+  border-left: 4px solid #ef4723;
+}
+
+.upcoming-item.medium {
+  border-left: 4px solid #e4a224;
+}
+
+.upcoming-item.low {
+  border-left: 4px solid #518aa8;
+}
+
+.calendar {
+  width: 80%;
+}
+
+.weekdays {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(7, 1fr);
+
+  padding: 0 1vh;
+
+  font-weight: 600;
+  font-size: clamp(14px, 1.2vw, 20px);
+
+  color: #73bf44;
+
+  text-align: center;
+}
+
 .schedule-grid {
   top: 0;
   left: 0;
@@ -120,10 +191,10 @@ main {
 
   display: grid;
 
-  grid-template-columns: repeat(5, 1fr);
-  grid-template-rows: repeat(3, 1fr);
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(4, 1fr);
 
-  gap: 2vh;
+  gap: 1vh;
   padding: 1vh;
 
   transition: opacity 1s ease;
@@ -141,9 +212,18 @@ main {
   overflow: hidden;
 }
 
+.day-box.past {
+  opacity: 0.35;
+
+  filter: grayscale(0.6);
+}
+
 .day-box.today {
-  border-color: #e4a224;
-  color: white;
+  border-top: 6px solid #e4a224;
+
+  background: rgba(228, 162, 36, 0.1);
+
+  box-shadow: 0 0 20px rgba(228, 162, 36, 0.5);
 }
 
 .day-box.today .day-title {
@@ -171,7 +251,7 @@ main {
 }
 
 .day-header {
-  font-size: clamp(14px, 1.6vw, 26px);
+  font-size: clamp(14px, 0.7vw, 26px);
   font-weight: 600;
   margin-bottom: 0.5vh;
 
@@ -192,8 +272,10 @@ main {
   flex-direction: column;
 
   gap: 0.4vh;
+}
 
-  animation: scrollEvents linear infinite;
+.events-scroll {
+  animation: scrollEvents 60s linear infinite;
 }
 
 .event {
@@ -206,7 +288,7 @@ main {
   /* border-left: 6px solid #73bf44; */
 
   font-weight: 300;
-  font-size: clamp(10px, 1.2vw, 20px);
+  font-size: clamp(10px, 0.7vw, 20px);
 }
 
 .event.public {

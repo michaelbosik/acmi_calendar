@@ -7,6 +7,8 @@ const CONFIG = {
     SPORTS_CALENDAR_ID:
       "c_bh5arljqqeubqreqjjgg1lts98@group.calendar.google.com",
   },
+  EVENTS_SHEET_ID: "1xa5sya5jADtJ_wGiYU1lV06CVOYfKmYKUnenKqMJWvE",
+  EVENTS_SHEET_RANGE: "Sheet1!A2:E",
   WORDNIK: "9ua3unnldvnjw020u4tmtq23valjk51zwm0z7xbsmb7055zvw",
   COLORS: {
     green: "#73bf44",

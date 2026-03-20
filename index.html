@@ -1,86 +1,85 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <head>
+    <title>ACMi Calendar</title>
 
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="styles.css" />
 
-        <title>ACMi Calendar</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&family=Dosis:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
 
-        <link rel="stylesheet" href="styles.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+  </head>
 
-        <link
-            href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&family=Dosis:wght@400;600&display=swap"
-            rel="stylesheet">
+  <body>
+    <div class="background"></div>
 
-        <link rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <header class="header">
+      <div class="logo-area">
+        <img src="assets/acmi-logo.png" class="logo" />
+        <div class="org-name">Arlington Community Media</div>
+      </div>
 
-    </head>
+      <div class="weather" id="weather">
+        <div class="weather-temp" id="weather-temp"></div>
+        <div class="weather-icon" id="weather-icon">
+          <i class="fa-solid fa-cloud"></i>
+        </div>
+      </div>
 
-    <body>
+      <div class="clock" id="clock"></div>
+    </header>
 
-        <div class="background"></div>
+    <main>
+      <div class="maingrid">
+        <div id="calendar" class="calendar">
+          <div class="weekdays">
+            <div>Sun</div>
+            <div>Mon</div>
+            <div>Tue</div>
+            <div>Wed</div>
+            <div>Thu</div>
+            <div>Fri</div>
+            <div>Sat</div>
+          </div>
+          <div id="schedule-grid" class="schedule-grid"></div>
+        </div>
+        <div id="upcoming" class="upcoming"></div>
+      </div>
+    </main>
 
-        <header class="header">
+    <footer class="ticker">
+      <div class="ticker-track">
+        <!-- TODO: implement duplicateTicker() to avoid needing two html structures -->
+        <div class="ticker-content">
+          <span>ACMi Public Channel • </span>
+          <span>Community Bulletin Board • </span>
+          <span>Submit your show ideas at acmi.tv • </span>
+          <span>Volunteer opportunities available • </span>
+          <span>Watch live at acmi.tv/watch • </span>
+          <span id="wordoftheday"></span>
+        </div>
 
-            <div class="logo-area">
-                <img src="assets/acmi-logo.png" class="logo">
-                <div class="org-name">Arlington Community Media</div>
-            </div>
+        <div class="ticker-content">
+          <span>ACMi Public Channel • </span>
+          <span>Community Bulletin Board • </span>
+          <span>Submit your show ideas at acmi.tv • </span>
+          <span>Volunteer opportunities available • </span>
+          <span>Watch live at acmi.tv/watch • </span>
+          <span id="wordoftheday2"></span>
+        </div>
+      </div>
+    </footer>
 
-            <!-- <div class="wordoftheday">
-                <p>Word of the Day</p>
-                <div class="word" id="word"></div>
-                <div class="definition" id="definition"></div>
-            </div> -->
-
-            <div class="weather" id="weather">
-                <div class="weather-temp" id="weather-temp"></div>
-                <div class="weather-icon" id="weather-icon">
-                    <i class="fa-solid fa-cloud"></i>
-                </div>
-            </div>
-
-            <div class="clock" id="clock"></div>
-
-        </header>
-
-        <main>
-
-            <div id="schedule-grid" class="schedule-grid"></div>
-
-        </main>
-
-        <footer class="ticker">
-
-            <div class="ticker-track">
-
-                <div class="ticker-content">
-                    <span>ACMi Public Channel • </span>
-                    <span>Community Bulletin Board • </span>
-                    <span>Submit your show ideas at acmi.tv • </span>
-                    <span>Volunteer opportunities available • </span>
-                    <span>Watch live at acmi.tv/watch • </span>
-                    <span id="wordoftheday"></span>
-                </div>
-
-                <div class="ticker-content">
-                    <span>ACMi Public Channel • </span>
-                    <span>Community Bulletin Board • </span>
-                    <span>Submit your show ideas at acmi.tv • </span>
-                    <span>Volunteer opportunities available • </span>
-                    <span>Watch live at acmi.tv/watch • </span>
-                    <span id="wordoftheday2"></span>
-                </div>
-
-            </div>
-
-        </footer>
-
-        <script src="config.js"></script>
-        <script src="app.js"></script>
-
-    </body>
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+  </body>
 </html>
