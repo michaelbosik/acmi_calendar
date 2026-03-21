@@ -63,6 +63,71 @@ async function fetchEvents() {
   buildGrid(allResults);
 }
 
+async function fetchWordOfDay2() {
+  function pickWord(words) {
+    const valid = words.filter((w) => w.approved === "TRUE");
+    valid.sort((a, b) => {
+      return new Date(a.lastUsed || 0) - new Date(b.lastUsed || 0);
+    });
+
+    return valid[0];
+  }
+
+  function markWordUsed(word) {
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Words");
+    const data = sheet.getDataRange().getValues();
+
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][0] === word) {
+        sheet.getRange(i + 1, 4).setValue(new Date()); // LastUsed column
+        break;
+      }
+    }
+  }
+
+  async function suggestNewWords(baseWord) {
+    const res = await fetch(
+      `https://api.wordnik.com/v4/word.json/${baseWord}/relatedWords?api_key=${CONFIG.WORDNIK}`,
+    );
+    const data = await res.json();
+
+    return data.flatMap((d) => d.words).filter((w) => w.length < 20); // basic filter
+  }
+
+  try {
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.EVENTS_SHEET_ID}/values/${CONFIG.WORDS_SHEET_RANGE}?key=${CONFIG.GOOGLE_API_KEY}`;
+    const res = await fetch(url);
+    const data = await res.json();
+
+    const words = data.values.map((row) => ({
+      word: row[0],
+      definition: row[1],
+      category: row[2],
+      last_used: row[3],
+      approved: row[4],
+      source: row[5],
+    }));
+
+    const word = pickWord(words);
+    try {
+      markWordUsed(word);
+      suggestNewWords(word);
+    } catch (err) {
+      console.log("Google Sheets API failed", err);
+    }
+
+    try {
+      const response = await fetch(
+        `https://api.wordnik.com/v4/word.json/${word}/relatedWords?useCanonical=false&limitPerRelationshipType=10&api_key=${CONFIG.WORDNIK}`,
+      );
+    } catch (err) {
+      console.log("Wordnik API failed", err);
+    }
+  } catch (err) {
+    console.log("Google Sheets API failed", err);
+  }
+}
+
 // TODO - only get relevent terms
 async function fetchWordOfDay() {
   try {
@@ -318,7 +383,7 @@ function rotateShift() {
 }
 
 function fetchAll() {
-  fetchWordOfDay();
+  fetchWordOfDay2();
   fetchEvents();
   fetchWeather();
   fetchUpcoming().then((upcoming) => {
