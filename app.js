@@ -11,204 +11,95 @@ function updateClock() {
   );
 }
 
-async function fetchUpcoming() {
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.EVENTS_SHEET_ID}/values/${CONFIG.EVENTS_SHEET_RANGE}?key=${CONFIG.GOOGLE_API_KEY}`;
-
-  const res = await fetch(url);
-  const data = await res.json();
-
-  return data.values.map((row) => ({
-    title: row[0],
-    date: row[1],
-    type: row[2],
-    priority: row[3],
-    description: row[4],
-  }));
-}
-
-function renderUpcoming(items) {
-  const container = document.getElementById("upcoming");
-  container.innerHTML = "<h3>Crew Calls</h3>";
-
-  items.slice(0, 5).forEach((item) => {
-    const div = document.createElement("div");
-    div.className = `upcoming-item ${item.priority?.toLowerCase()}`;
-
-    div.innerHTML = `
-      <div class="title">${item.title}</div>
-      <div class="meta">${item.date} • ${item.type}</div>
-      <div class="desc">${item.description}</div>
-    `;
-
-    container.appendChild(div);
-  });
-}
-
-// Get events from configured calendars
-async function fetchEvents() {
-  const now = new Date();
-  const sunday = getLastSunday(now).toISOString();
-  let allResults = [];
-
-  for (const [service, calendarID] of Object.entries(CONFIG.CALENDAR_IDS)) {
-    const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarID)}/events?key=${CONFIG.GOOGLE_API_KEY}&timeMin=${sunday}&singleEvents=true&orderBy=startTime&maxResults=100`;
+async function buildHeader() {
+  // Use weather.gov API to determine weather, set temp and icon
+  async function fetchWeather() {
+    const url = "https://api.weather.gov/gridpoints/BOX/67,92/forecast/hourly";
     const response = await fetch(url);
     const data = await response.json();
 
-    if (data.items) {
-      allResults = allResults.concat(data.items);
-    }
-  }
-
-  buildGrid(allResults);
-}
-
-async function fetchWordOfDay2() {
-  function pickWord(words) {
-    const valid = words.filter((w) => w.approved === "TRUE");
-    valid.sort((a, b) => {
-      return new Date(a.lastUsed || 0) - new Date(b.lastUsed || 0);
-    });
-
-    return valid[0];
-  }
-
-  function markWordUsed(word) {
-    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Words");
-    const data = sheet.getDataRange().getValues();
-
-    for (let i = 1; i < data.length; i++) {
-      if (data[i][0] === word) {
-        sheet.getRange(i + 1, 4).setValue(new Date()); // LastUsed column
-        break;
+    function getWeatherIcon(current_weather) {
+      function parseWindSpeed(speedString) {
+        const match = speedString.match(/\d+/);
+        return match ? parseInt(match[0]) : 0;
       }
-    }
-  }
+      const isDaytime = current_weather.isDaytime;
+      const windSpeed = parseWindSpeed(current_weather.windSpeed);
+      const text = current_weather.shortForecast.toLowerCase();
 
-  async function suggestNewWords(baseWord) {
-    const res = await fetch(
-      `https://api.wordnik.com/v4/word.json/${baseWord}/relatedWords?api_key=${CONFIG.WORDNIK}`,
-    );
-    const data = await res.json();
-
-    return data.flatMap((d) => d.words).filter((w) => w.length < 20); // basic filter
-  }
-
-  try {
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.EVENTS_SHEET_ID}/values/${CONFIG.WORDS_SHEET_RANGE}?key=${CONFIG.GOOGLE_API_KEY}`;
-    const res = await fetch(url);
-    const data = await res.json();
-
-    const words = data.values.map((row) => ({
-      word: row[0],
-      definition: row[1],
-      category: row[2],
-      last_used: row[3],
-      approved: row[4],
-      source: row[5],
-    }));
-
-    const word = pickWord(words);
-    try {
-      markWordUsed(word);
-      suggestNewWords(word);
-    } catch (err) {
-      console.log("Google Sheets API failed", err);
-    }
-
-    try {
-      const response = await fetch(
-        `https://api.wordnik.com/v4/word.json/${word}/relatedWords?useCanonical=false&limitPerRelationshipType=10&api_key=${CONFIG.WORDNIK}`,
-      );
-    } catch (err) {
-      console.log("Wordnik API failed", err);
-    }
-  } catch (err) {
-    console.log("Google Sheets API failed", err);
-  }
-}
-
-// TODO - only get relevent terms
-async function fetchWordOfDay() {
-  try {
-    const response = await fetch(
-      `https://api.wordnik.com/v4/words.json/wordOfTheDay?api_key=${CONFIG.WORDNIK}`,
-    );
-
-    const data = await response.json();
-
-    const word = data.word;
-    const definition = data.definitions?.[0]?.text || "";
-
-    document.getElementById("wordoftheday").textContent =
-      `Word of the Day -- ${word} - ${definition} --`;
-    document.getElementById("wordoftheday2").textContent =
-      `Word of the Day -- ${word} - ${definition} --`;
-  } catch (err) {
-    console.log("Word API failed", err);
-  }
-}
-
-// Use weather.gov API to determine weather, set temp and icon
-async function fetchWeather() {
-  const url = "https://api.weather.gov/gridpoints/BOX/67,92/forecast/hourly";
-  const response = await fetch(url);
-  const data = await response.json();
-
-  function getWeatherIcon(current_weather) {
-    function parseWindSpeed(speedString) {
-      const match = speedString.match(/\d+/);
-      return match ? parseInt(match[0]) : 0;
-    }
-    const isDaytime = current_weather.isDaytime;
-    const windSpeed = parseWindSpeed(current_weather.windSpeed);
-    const text = current_weather.shortForecast.toLowerCase();
-
-    if (windSpeed >= 40) return "hurricane";
-    if (text.includes("thunder") || text.includes("storm")) return "cloud-bolt";
-    if (text.includes("snow") || text.includes("flurries")) return "snowflake";
-    if (text.includes("showers") || text.includes("heavy rain"))
-      return "cloud-showers-heavy";
-    if (text.includes("rain") || text.includes("drizzle")) {
-      if (text.includes("sun") || text.includes("partly"))
-        return isDaytime ? "cloud-sun-rain" : "cloud-moon-rain";
-      return "cloud-rain";
-    }
-    if (text.includes("fog") || text.includes("haze") || text.includes("mist"))
-      return "smog";
-    if (windSpeed >= 20) return "wind";
-    if (text.includes("partly")) {
-      return isDaytime ? "cloud-sun" : "cloud-moon";
-    }
-    if (text.includes("cloud")) return "cloud";
-    if (
-      text.includes("clear") ||
-      text.includes("sunny") ||
-      text.includes("mostly sunny")
-    ) {
+      if (windSpeed >= 40) return "hurricane";
+      if (text.includes("thunder") || text.includes("storm"))
+        return "cloud-bolt";
+      if (text.includes("snow") || text.includes("flurries"))
+        return "snowflake";
+      if (text.includes("showers") || text.includes("heavy rain"))
+        return "cloud-showers-heavy";
+      if (text.includes("rain") || text.includes("drizzle")) {
+        if (text.includes("sun") || text.includes("partly"))
+          return isDaytime ? "cloud-sun-rain" : "cloud-moon-rain";
+        return "cloud-rain";
+      }
+      if (
+        text.includes("fog") ||
+        text.includes("haze") ||
+        text.includes("mist")
+      )
+        return "smog";
+      if (windSpeed >= 20) return "wind";
+      if (text.includes("partly")) {
+        return isDaytime ? "cloud-sun" : "cloud-moon";
+      }
+      if (text.includes("cloud")) return "cloud";
+      if (
+        text.includes("clear") ||
+        text.includes("sunny") ||
+        text.includes("mostly sunny")
+      ) {
+        return isDaytime ? "sun" : "moon";
+      }
       return isDaytime ? "sun" : "moon";
     }
-    return isDaytime ? "sun" : "moon";
+
+    let current_weather = data.properties.periods[0];
+    let icon = getWeatherIcon(current_weather);
+
+    document.getElementById("weather-temp").textContent =
+      `${Math.round(current_weather.temperature)}°F`;
+
+    document.getElementById("weather-icon").innerHTML =
+      `<i class="fa-solid fa-${icon}"></i>`;
   }
 
-  let current_weather = data.properties.periods[0];
-  let icon = getWeatherIcon(current_weather);
-
-  document.getElementById("weather-temp").textContent =
-    `${Math.round(current_weather.temperature)}°F`;
-
-  document.getElementById("weather-icon").innerHTML =
-    `<i class="fa-solid fa-${icon}"></i>`;
+  fetchWeather();
 }
 
-function getLastSunday(now) {
-  const d = new Date(now);
-  d.setDate(d.getDate() - d.getDay());
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
+async function buildGrid() {
+  // Get events from configured calendars
+  async function fetchEvents() {
+    const now = new Date();
+    const sunday = getLastSunday(now).toISOString();
+    let events = []
 
-function buildGrid(events) {
+    for (const [service, calendarID] of Object.entries(CONFIG.CALENDAR_IDS)) {
+      const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarID)}/events?key=${CONFIG.GOOGLE_API_KEY}&timeMin=${sunday}&singleEvents=true&orderBy=startTime&maxResults=100`;
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.items) {
+        events = events.concat(data.items);
+      }
+    }
+
+    return events
+  }
+
+  function getLastSunday(now) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - d.getDay());
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }
+
   function toISOLocal(d) {
     var z = (n) => ("0" + n).slice(-2);
     var zz = (n) => ("00" + n).slice(-3);
@@ -350,13 +241,14 @@ function buildGrid(events) {
     grid.appendChild(box);
   }
 
+  const events = await fetchEvents();
+
   const grid = document.getElementById("schedule-grid");
   grid.innerHTML = "";
 
   let today = new Date();
   const sunday = getLastSunday(today);
 
-  const TOTAL_DAYS = 28;
   for (let i = 0; i < TOTAL_DAYS; i++) {
     let date = new Date(sunday);
     date.setDate(sunday.getDate() + i);
@@ -372,6 +264,134 @@ function buildGrid(events) {
   }
 }
 
+function buildWidget() {
+  async function fetchUpcoming() {
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.EVENTS_SHEET_ID}/values/${CONFIG.EVENTS_SHEET_RANGE}?key=${CONFIG.GOOGLE_API_KEY}`;
+
+    const res = await fetch(url);
+    const data = await res.json();
+
+    return data.values.map((row) => ({
+      title: row[0],
+      date: row[1],
+      type: row[2],
+      priority: row[3],
+      description: row[4],
+    }));
+  }
+
+  function renderUpcoming(items) {
+    const container = document.getElementById("upcoming");
+    container.innerHTML = "<h3>Crew Calls</h3>";
+
+    items.slice(0, 5).forEach((item) => {
+      const div = document.createElement("div");
+      div.className = `upcoming-item ${item.priority?.toLowerCase()}`;
+
+      div.innerHTML = `
+      <div class="title">${item.title}</div>
+      <div class="meta">${item.date} • ${item.type}</div>
+      <div class="desc">${item.description}</div>
+    `;
+
+      container.appendChild(div);
+    });
+  }
+
+  fetchUpcoming().then((upcoming) => {
+    renderUpcoming(upcoming);
+  });
+}
+
+function buildTicker() {
+  async function fetchWordOfDay2() {
+    function pickWord(words) {
+      const valid = words.filter((w) => w.approved === "TRUE");
+      valid.sort((a, b) => {
+        return new Date(a.lastUsed || 0) - new Date(b.lastUsed || 0);
+      });
+
+      return valid[0];
+    }
+
+    function markWordUsed(word) {
+      const sheet =
+        SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Words");
+      const data = sheet.getDataRange().getValues();
+
+      for (let i = 1; i < data.length; i++) {
+        if (data[i][0] === word) {
+          sheet.getRange(i + 1, 4).setValue(new Date()); // LastUsed column
+          break;
+        }
+      }
+    }
+
+    async function suggestNewWords(baseWord) {
+      const res = await fetch(
+        `https://api.wordnik.com/v4/word.json/${baseWord}/relatedWords?api_key=${CONFIG.WORDNIK}`,
+      );
+      const data = await res.json();
+
+      return data.flatMap((d) => d.words).filter((w) => w.length < 20); // basic filter
+    }
+
+    try {
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.EVENTS_SHEET_ID}/values/${CONFIG.WORDS_SHEET_RANGE}?key=${CONFIG.GOOGLE_API_KEY}`;
+      const res = await fetch(url);
+      const data = await res.json();
+
+      const words = data.values.map((row) => ({
+        word: row[0],
+        definition: row[1],
+        category: row[2],
+        last_used: row[3],
+        approved: row[4],
+        source: row[5],
+      }));
+
+      const word = pickWord(words);
+      try {
+        markWordUsed(word);
+        suggestNewWords(word);
+      } catch (err) {
+        console.log("Google Sheets API failed", err);
+      }
+
+      try {
+        const response = await fetch(
+          `https://api.wordnik.com/v4/word.json/${word}/relatedWords?useCanonical=false&limitPerRelationshipType=10&api_key=${CONFIG.WORDNIK}`,
+        );
+      } catch (err) {
+        console.log("Wordnik API failed", err);
+      }
+    } catch (err) {
+      console.log("Google Sheets API failed", err);
+    }
+  }
+
+  // TODO - only get relevent terms
+  async function fetchWordOfDay() {
+    try {
+      const response = await fetch(
+        `https://api.wordnik.com/v4/words.json/wordOfTheDay?api_key=${CONFIG.WORDNIK}`,
+      );
+
+      const data = await response.json();
+
+      const word = data.word;
+      const definition = data.definitions?.[0]?.text || "";
+
+      document.getElementById("wordoftheday").textContent =
+        `Word of the Day -- ${word} - ${definition} --`;
+      document.getElementById("wordoftheday2").textContent =
+        `Word of the Day -- ${word} - ${definition} --`;
+    } catch (err) {
+      console.log("Word API failed", err);
+    }
+  }
+}
+
 //Shift page by a few pixels to prevent burn
 const shifts = ["shift1", "shift2", "shift3", "shift4"];
 function rotateShift() {
@@ -382,21 +402,21 @@ function rotateShift() {
   document.body.classList.add(next);
 }
 
-function fetchAll() {
-  fetchWordOfDay2();
-  fetchEvents();
-  fetchWeather();
-  fetchUpcoming().then((upcoming) => {
-    renderUpcoming(upcoming);
-  });
+function buildPage() {
+  buildGrid();
+  buildHeader();
+  buildWidget();
+  buildTicker();
 }
 
+const TOTAL_DAYS = 28;
+
+buildPage();
+setInterval(buildPage, 60000 * 30);
+
 updateClock();
-
-fetchAll();
-setInterval(fetchAll, 60000 * 30);
-
 setInterval(updateClock, 1000);
+
 setInterval(rotateShift, 10 * 60000);
 
 //Reload page every hour
