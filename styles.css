@@ -126,9 +126,9 @@ main {
 
   background: #1c1c1c;
 
-  border-left: 5px solid #ef4723;
+  border-left: 5px solid #518aa8;
 
-  padding: 16px;
+  padding: 1.2vh;
   margin: auto;
 
   border-radius: 8px;
@@ -155,7 +155,9 @@ main {
   /* border-left: 6px solid #73bf44; */
 
   font-weight: 300;
-  font-size: clamp(10px, 1vw, 20px);
+  font-size: clamp(10px, 0.7vw, 20px);
+
+  border-left: 4px solid #518aa8;
 }
 
 .upcoming-item .title {
@@ -166,17 +168,15 @@ main {
   color: #73bf44;
 }
 
-.upcoming-item.high {
-  border-left: 4px solid #ef4723;
+/* .upcoming-item .desc {
+  font-size: clamp(14px, 0.7vw, 26px);
+  font-weight: 600;
 }
 
-.upcoming-item.medium {
-  border-left: 4px solid #e4a224;
-}
-
-.upcoming-item.low {
-  border-left: 4px solid #518aa8;
-}
+.upcoming-item .meta {
+  font-size: clamp(14px, 0.7vw, 26px);
+  font-weight: 600;
+} */
 
 .calendar {
   width: 80%;

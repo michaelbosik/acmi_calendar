@@ -3,6 +3,16 @@
  *  Created by Michael Bosik - 2026
  */
 
+//Shift page by a few pixels to prevent burn
+const shifts = ["shift1", "shift2", "shift3", "shift4"];
+function rotateShift() {
+  document.body.classList.remove(...shifts);
+
+  const next = shifts[Math.floor(Math.random() * shifts.length)];
+
+  document.body.classList.add(next);
+}
+
 function updateClock() {
   const now = new Date();
   document.getElementById("clock").textContent = now.toLocaleTimeString(
@@ -78,7 +88,7 @@ async function buildGrid() {
   async function fetchEvents() {
     const now = new Date();
     const sunday = getLastSunday(now).toISOString();
-    let events = []
+    let events = [];
 
     for (const [service, calendarID] of Object.entries(CONFIG.CALENDAR_IDS)) {
       const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarID)}/events?key=${CONFIG.GOOGLE_API_KEY}&timeMin=${sunday}&singleEvents=true&orderBy=startTime&maxResults=100`;
@@ -90,7 +100,7 @@ async function buildGrid() {
       }
     }
 
-    return events
+    return events;
   }
 
   function getLastSunday(now) {
@@ -136,8 +146,8 @@ async function buildGrid() {
   //   return "";
   // }
 
-  function createDayBox(grid, date, dayEvents) {
-    function appendHeader(date) {
+  function createDayBox() {
+    function appendHeader() {
       const now = new Date();
       const isToday = date.toDateString() === now.toDateString();
       const isPast = date < new Date(now.setHours(0, 0, 0, 0));
@@ -160,7 +170,7 @@ async function buildGrid() {
       return header;
     }
 
-    function appendEvents(dayEvents) {
+    function appendEvents() {
       function createEvent(event) {
         function getColor(calendar) {
           switch (calendar) {
@@ -222,13 +232,6 @@ async function buildGrid() {
         inner.appendChild(createEvent(event));
       });
 
-      /** TODO - Scrolling animation for days with a lot of events */
-      // const speed = Math.max(dayEvents.length * 4, 12);
-      // inner.style.animationDuration = speed + "s";
-      // if (dayEvents.length <= 2) {
-      //   inner.style.animation = "none";
-      // }
-
       eventsContainer.appendChild(inner);
 
       return eventsContainer;
@@ -236,8 +239,8 @@ async function buildGrid() {
 
     let box = document.createElement("div");
     box.className = "day-box";
-    box.appendChild(appendHeader(date));
-    box.appendChild(appendEvents(dayEvents));
+    box.appendChild(appendHeader());
+    box.appendChild(appendEvents());
     grid.appendChild(box);
   }
 
@@ -246,21 +249,26 @@ async function buildGrid() {
   const grid = document.getElementById("schedule-grid");
   grid.innerHTML = "";
 
-  let today = new Date();
-  const sunday = getLastSunday(today);
+  let date = new Date();
+  let dateKey = toISOLocal(date).split("T")[0];
+  let dayEvents = events.filter((e) => {
+    let start = e.start.dateTime || e.start.date;
+    return start.startsWith(dateKey);
+  });
+  const sunday = getLastSunday(date);
 
   for (let i = 0; i < TOTAL_DAYS; i++) {
-    let date = new Date(sunday);
+    date = new Date(sunday);
     date.setDate(sunday.getDate() + i);
 
-    let dateKey = toISOLocal(date).split("T")[0];
+    dateKey = toISOLocal(date).split("T")[0];
 
-    let dayEvents = events.filter((e) => {
+    dayEvents = events.filter((e) => {
       let start = e.start.dateTime || e.start.date;
       return start.startsWith(dateKey);
     });
 
-    createDayBox(grid, date, dayEvents);
+    createDayBox();
   }
 }
 
@@ -274,27 +282,29 @@ function buildWidget() {
     return data.values.map((row) => ({
       title: row[0],
       date: row[1],
-      type: row[2],
-      priority: row[3],
-      description: row[4],
+      description: row[2],
+      roles: row[3],
+      show: row[4],
     }));
   }
 
   function renderUpcoming(items) {
     const container = document.getElementById("upcoming");
-    container.innerHTML = "<h3>Crew Calls</h3>";
+    container.innerHTML = "<h3>Member Opportunities</h3>";
 
-    items.slice(0, 5).forEach((item) => {
+    items.forEach((item) => {
       const div = document.createElement("div");
-      div.className = `upcoming-item ${item.priority?.toLowerCase()}`;
+      div.className = `upcoming-item`;
 
-      div.innerHTML = `
-      <div class="title">${item.title}</div>
-      <div class="meta">${item.date} • ${item.type}</div>
+      if (item.show == "Yes") {
+        div.innerHTML = `
+      <div class="title">${item.title} • ${item.date}</div>
       <div class="desc">${item.description}</div>
+      <div class="meta">${item.roles}</div>
     `;
 
-      container.appendChild(div);
+        container.appendChild(div);
+      }
     });
   }
 
@@ -370,7 +380,6 @@ function buildTicker() {
     }
   }
 
-  // TODO - only get relevent terms
   async function fetchWordOfDay() {
     try {
       const response = await fetch(
@@ -384,27 +393,20 @@ function buildTicker() {
 
       document.getElementById("wordoftheday").textContent =
         `Word of the Day -- ${word} - ${definition} --`;
-      document.getElementById("wordoftheday2").textContent =
-        `Word of the Day -- ${word} - ${definition} --`;
     } catch (err) {
       console.log("Word API failed", err);
     }
   }
-}
 
-//Shift page by a few pixels to prevent burn
-const shifts = ["shift1", "shift2", "shift3", "shift4"];
-function rotateShift() {
-  document.body.classList.remove(...shifts);
-
-  const next = shifts[Math.floor(Math.random() * shifts.length)];
-
-  document.body.classList.add(next);
+  fetchWordOfDay();
+  // fetchWordOfDay2()
+  const ticker_content = document.getElementById("ticker-content");
+  ticker_content.parentElement.appendChild(ticker_content.cloneNode(true));
 }
 
 function buildPage() {
-  buildGrid();
   buildHeader();
+  buildGrid();
   buildWidget();
   buildTicker();
 }
