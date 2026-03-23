@@ -9,7 +9,7 @@ const CONFIG = {
   },
   EVENTS_SHEET_ID: "1xa5sya5jADtJ_wGiYU1lV06CVOYfKmYKUnenKqMJWvE",
   EVENTS_SHEET_RANGE: "CrewCalls!A2:E",
-  WORDS_SHEET_RANGE: "Words!A2:F",
+  WORDS_SHEET_RANGE: "Words!A2:C",
   WORDNIK: "9ua3unnldvnjw020u4tmtq23valjk51zwm0z7xbsmb7055zvw",
   COLORS: {
     green: "#73bf44",

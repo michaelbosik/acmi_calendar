@@ -153,20 +153,20 @@ async function buildGrid() {
       const isPast = date < new Date(now.setHours(0, 0, 0, 0));
       let header = document.createElement("div");
       header.className = "day-header";
-
-      /** TODO - Format dayBox header so date doesnt wrap inconsistently */
       header.textContent += date.toLocaleDateString([], {
         // weekday: "short",
-        month: "long",
         day: "numeric",
+        month: "long",
       });
+
       if (isToday) {
-        header.textContent += "\nToday";
+        header.textContent += "\n- Today";
         box.classList.add("today");
       }
       if (isPast) {
         box.classList.add("past");
       }
+
       return header;
     }
 
@@ -314,28 +314,29 @@ function buildWidget() {
 }
 
 function buildTicker() {
-  async function fetchWordOfDay2() {
+  async function fetchWordOfDaySheets() {
     function pickWord(words) {
-      const valid = words.filter((w) => w.approved === "TRUE");
-      valid.sort((a, b) => {
-        return new Date(a.lastUsed || 0) - new Date(b.lastUsed || 0);
-      });
+      const valid = words.filter((w) => w.show === "Yes");
+      return valid[Math.floor(Math.random() * valid.length)].word;
+      // valid.sort((a, b) => {
+      //   return new Date(a.last_used || 0) - new Date(b.last_used || 0);
+      // });
 
-      return valid[0];
+      // return valid[0];
     }
 
-    function markWordUsed(word) {
-      const sheet =
-        SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Words");
-      const data = sheet.getDataRange().getValues();
+    // function markWordUsed(word) {
+    //   const sheet =
+    //     SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Words");
+    //   const data = sheet.getDataRange().getValues();
 
-      for (let i = 1; i < data.length; i++) {
-        if (data[i][0] === word) {
-          sheet.getRange(i + 1, 4).setValue(new Date()); // LastUsed column
-          break;
-        }
-      }
-    }
+    //   for (let i = 1; i < data.length; i++) {
+    //     if (data[i][0] === word) {
+    //       sheet.getRange(i + 1, 4).setValue(new Date()); // LastUsed column
+    //       break;
+    //     }
+    //   }
+    // }
 
     async function suggestNewWords(baseWord) {
       const res = await fetch(
@@ -353,25 +354,28 @@ function buildTicker() {
 
       const words = data.values.map((row) => ({
         word: row[0],
-        definition: row[1],
-        category: row[2],
-        last_used: row[3],
-        approved: row[4],
-        source: row[5],
+        show: row[1],
+        last_used: row[2],
       }));
 
-      const word = pickWord(words);
-      try {
-        markWordUsed(word);
-        suggestNewWords(word);
-      } catch (err) {
-        console.log("Google Sheets API failed", err);
-      }
+      // const word = pickWord(words);
+      // try {
+      //   markWordUsed(word);
+      //   suggestNewWords(word);
+      // } catch (err) {
+      //   console.log("Google Sheets API failed", err);
+      // }
 
       try {
         const response = await fetch(
-          `https://api.wordnik.com/v4/word.json/${word}/relatedWords?useCanonical=false&limitPerRelationshipType=10&api_key=${CONFIG.WORDNIK}`,
+          `https://api.wordnik.com/v4/word.json/${pickWord(words)}/definitions?limit=50&includeRelated=false&useCanonical=false&includeTags=false&api_key=${CONFIG.WORDNIK}`,
         );
+        const data = await response.json();
+        const word = data[Math.floor(Math.random() * data.length)];
+        const definition = word.text || "";
+
+        document.getElementById("wordoftheday").textContent =
+          `Word of the Day -- ${word.word} - ${definition} --`;
       } catch (err) {
         console.log("Wordnik API failed", err);
       }
@@ -380,7 +384,7 @@ function buildTicker() {
     }
   }
 
-  async function fetchWordOfDay() {
+  async function fetchWordOfDayWordnik() {
     try {
       const response = await fetch(
         `https://api.wordnik.com/v4/words.json/wordOfTheDay?api_key=${CONFIG.WORDNIK}`,
@@ -398,8 +402,21 @@ function buildTicker() {
     }
   }
 
-  fetchWordOfDay();
-  // fetchWordOfDay2()
+  async function didYouKnow() {
+    const icons = {
+      tip: "🎬 ",
+      fact: "📺 ",
+      history: "🎥 ",
+    };
+    const today = new Date();
+    // const index = today.getDate() % CONTENT.length;
+    const index = Math.floor(Math.random() * CONTENT.length);
+
+    document.getElementById("did-you-know").textContent =
+      `${icons[CONTENT[index].type]} Did you know? -- ${CONTENT[index].text} --`;
+  }
+
+  didYouKnow();
   const ticker_content = document.getElementById("ticker-content");
   ticker_content.parentElement.appendChild(ticker_content.cloneNode(true));
 }
