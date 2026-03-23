@@ -429,9 +429,17 @@ function buildTicker() {
       `${icons[CONTENT[index].type]} Did you know? -- ${CONTENT[index].text} --`;
   }
 
+  function setTickerSpeed() {
+    const ticker = document.getElementById("ticker-track");
+    const speed = (window.innerWidth / (ticker.children.item(0).children.length * 40)) * 10;
+    ticker.style.animation = `tickerScroll ${speed}s linear infinite`;
+  }
+
   didYouKnow();
   const ticker_content = document.getElementById("ticker-content");
   ticker_content.parentElement.appendChild(ticker_content.cloneNode(true));
+
+  setTickerSpeed();
 }
 
 function buildPage() {

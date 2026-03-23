@@ -370,8 +370,6 @@ main {
 .ticker-track {
   display: flex;
   width: max-content;
-
-  animation: tickerScroll 40s linear infinite;
 }
 
 .ticker-content {
