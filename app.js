@@ -292,6 +292,12 @@ function buildWidget() {
     const container = document.getElementById("upcoming");
     container.innerHTML = "<h3>Member Opportunities</h3>";
 
+    const crewCallsContainer = document.createElement("div");
+    crewCallsContainer.className = "events";
+
+    const inner = document.createElement("div");
+    inner.className = "events-inner";
+
     items.forEach((item) => {
       const div = document.createElement("div");
       div.className = `upcoming-item`;
@@ -303,9 +309,16 @@ function buildWidget() {
       <div class="meta">${item.roles}</div>
     `;
 
-        container.appendChild(div);
+        inner.appendChild(div);
       }
     });
+
+    if (inner.children.length > 5) {
+      inner.classList += " events-scroll";
+    }
+
+    crewCallsContainer.appendChild(inner);
+    container.appendChild(crewCallsContainer);
   }
 
   fetchUpcoming().then((upcoming) => {

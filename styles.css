@@ -137,6 +137,7 @@ main {
   flex-direction: column;
 
   gap: 0.7vh;
+  overflow: hidden;
 }
 
 .upcoming h3 {
