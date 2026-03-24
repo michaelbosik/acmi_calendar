@@ -213,7 +213,7 @@ async function buildGrid() {
       }
 
       function applyScrollAnimation(inner, overflow) {
-        const duration = Math.max(overflow * 0.1, 10); // tweak multiplier
+        const duration = Math.max(overflow * 0.5, 10); // tweak multiplier
 
         inner.style.setProperty("--scroll-distance", `-${overflow}px`);
         inner.style.setProperty("--scroll-duration", `${duration}s`);
@@ -287,15 +287,6 @@ async function buildGrid() {
 
     createDayBox();
   }
-
-  const eventsBoxes = Array.from(document.getElementsByClassName("events"));
-  eventsBoxes.forEach((box) => {
-    const box_inner = box.children.item(0);
-    const speed = 60;
-    if (box_inner.clientHeight > box.clientHeight) {
-      box_inner.style.animation = `scrollEvents ${speed}s linear infinite`;
-    }
-  });
 }
 
 function buildWidget() {
