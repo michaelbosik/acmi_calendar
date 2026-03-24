@@ -105,7 +105,7 @@ async function buildGrid() {
 
   function getLastSunday(now) {
     const d = new Date(now);
-    d.setDate(d.getDate() - d.getDay());
+    d.setDate(d.getDate() - d.getDay() - 7);
     d.setHours(0, 0, 0, 0);
     return d;
   }
@@ -178,9 +178,9 @@ async function buildGrid() {
               return CONFIG.COLORS.green;
             case "Holidays in United States":
               return CONFIG.COLORS.purple;
-            case "Sports":
-              return CONFIG.COLORS.blue;
             case "":
+              return CONFIG.COLORS.blue;
+            case "Sports":
               return CONFIG.COLORS.red;
             case "":
               return CONFIG.COLORS.yellow;
