@@ -212,6 +212,15 @@ async function buildGrid() {
         return summary;
       }
 
+      function applyScrollAnimation(inner, overflow) {
+        const duration = Math.max(overflow * 0.1, 10); // tweak multiplier
+
+        inner.style.setProperty("--scroll-distance", `-${overflow}px`);
+        inner.style.setProperty("--scroll-duration", `${duration}s`);
+
+        inner.classList.add("events-bounce-scroll");
+      }
+
       const eventsContainer = document.createElement("div");
       eventsContainer.className = "events";
 
@@ -224,8 +233,6 @@ async function buildGrid() {
         none.textContent = "No events";
 
         inner.appendChild(none);
-      } else if (dayEvents.length > 3) {
-        inner.classList += " events-scroll";
       }
 
       dayEvents.forEach((event) => {
@@ -233,6 +240,16 @@ async function buildGrid() {
       });
 
       eventsContainer.appendChild(inner);
+
+      requestAnimationFrame(() => {
+        const containerHeight = eventsContainer.clientHeight;
+        const contentHeight = inner.scrollHeight;
+
+        if (contentHeight > containerHeight) {
+          const overflow = contentHeight - containerHeight;
+          applyScrollAnimation(inner, overflow);
+        }
+      });
 
       return eventsContainer;
     }
@@ -270,6 +287,15 @@ async function buildGrid() {
 
     createDayBox();
   }
+
+  const eventsBoxes = Array.from(document.getElementsByClassName("events"));
+  eventsBoxes.forEach((box) => {
+    const box_inner = box.children.item(0);
+    const speed = 60;
+    if (box_inner.clientHeight > box.clientHeight) {
+      box_inner.style.animation = `scrollEvents ${speed}s linear infinite`;
+    }
+  });
 }
 
 function buildWidget() {
@@ -318,7 +344,15 @@ function buildWidget() {
     }
 
     crewCallsContainer.appendChild(inner);
+
+    const signUp = document.createElement("div");
+    signUp.className = "sign-up";
+
+    signUp.innerHTML += `<h3>Sign up Here</h3>
+    <img src="assets/crewcalls_qr.png" class="qr-code">`;
+
     container.appendChild(crewCallsContainer);
+    container.appendChild(signUp);
   }
 
   fetchUpcoming().then((upcoming) => {
@@ -431,7 +465,8 @@ function buildTicker() {
 
   function setTickerSpeed() {
     const ticker = document.getElementById("ticker-track");
-    const speed = (window.innerWidth / (ticker.children.item(0).children.length * 40)) * 10;
+    const speed =
+      (window.innerWidth / (ticker.children.item(0).children.length * 40)) * 10;
     ticker.style.animation = `tickerScroll ${speed}s linear infinite`;
   }
 
