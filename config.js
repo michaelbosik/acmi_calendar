@@ -19,4 +19,11 @@ const CONFIG = {
     blue: "#518aa8",
     white: "#ffffff",
   },
+  // EVENT_TAG_KEYWORDS: {
+  //   "NEWS": ["news", "press", "media"],
+  //   "SPORTS": ["sports", "game", "match", "tournament", "basketball", "football", "soccer", "baseball", "tennis", "lacrosse", "hockey"],
+  //   "MEMBERS_NEEDED": ["members needed", "volunteer", "help wanted", "crew call", "looking for"],
+  //   "INTERNAL": ["internal", "staff", "team", "private"],
+  //   "GOVERNMENT": ["government", "public", "city", "state", "federal", "committee", "council", "election"],
+  // }
 };

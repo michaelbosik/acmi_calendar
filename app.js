@@ -13,12 +13,66 @@ function rotateShift() {
   document.body.classList.add(next);
 }
 
+function toISOLocal(d) {
+  var z = (n) => ("0" + n).slice(-2);
+  var zz = (n) => ("00" + n).slice(-3);
+  var off = d.getTimezoneOffset();
+  var sign = off > 0 ? "-" : "+";
+  off = Math.abs(off);
+
+  return (
+    d.getFullYear() +
+    "-" +
+    z(d.getMonth() + 1) +
+    "-" +
+    z(d.getDate()) +
+    "T" +
+    z(d.getHours()) +
+    ":" +
+    z(d.getMinutes()) +
+    ":" +
+    z(d.getSeconds()) +
+    "." +
+    zz(d.getMilliseconds()) +
+    sign +
+    z((off / 60) | 0) +
+    ":" +
+    z(off % 60)
+  );
+}
+
+function getLastSunday(now) {
+  const d = new Date(now);
+  d.setDate(d.getDate() - d.getDay() - 7);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
 function updateClock() {
   const now = new Date();
   document.getElementById("clock").textContent = now.toLocaleTimeString(
     "en-US",
     { hour: "numeric", minute: "numeric", hour12: true },
   );
+}
+
+// Get events from configured calendars
+async function fetchEvents() {
+  const now = new Date();
+  const sunday = getLastSunday(now).toISOString();
+  let events = [];
+
+  for (const [service, calendarID] of Object.entries(CONFIG.CALENDAR_IDS)) {
+    const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarID)}/events?key=${CONFIG.GOOGLE_API_KEY}&timeMin=${sunday}&singleEvents=true&orderBy=startTime&maxResults=100`;
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.items) {
+      events = events.concat(data.items);
+    }
+  }
+
+  return events;
 }
 
 async function buildHeader() {
@@ -83,70 +137,8 @@ async function buildHeader() {
   fetchWeather();
 }
 
-async function buildGrid() {
-  // Get events from configured calendars
-  async function fetchEvents() {
-    const now = new Date();
-    const sunday = getLastSunday(now).toISOString();
-    let events = [];
-
-    for (const [service, calendarID] of Object.entries(CONFIG.CALENDAR_IDS)) {
-      const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarID)}/events?key=${CONFIG.GOOGLE_API_KEY}&timeMin=${sunday}&singleEvents=true&orderBy=startTime&maxResults=100`;
-      const response = await fetch(url);
-      const data = await response.json();
-
-      if (data.items) {
-        events = events.concat(data.items);
-      }
-    }
-
-    return events;
-  }
-
-  function getLastSunday(now) {
-    const d = new Date(now);
-    d.setDate(d.getDate() - d.getDay() - 7);
-    d.setHours(0, 0, 0, 0);
-    return d;
-  }
-
-  function toISOLocal(d) {
-    var z = (n) => ("0" + n).slice(-2);
-    var zz = (n) => ("00" + n).slice(-3);
-    var off = d.getTimezoneOffset();
-    var sign = off > 0 ? "-" : "+";
-    off = Math.abs(off);
-
-    return (
-      d.getFullYear() +
-      "-" +
-      z(d.getMonth() + 1) +
-      "-" +
-      z(d.getDate()) +
-      "T" +
-      z(d.getHours()) +
-      ":" +
-      z(d.getMinutes()) +
-      ":" +
-      z(d.getSeconds()) +
-      "." +
-      zz(d.getMilliseconds()) +
-      sign +
-      z((off / 60) | 0) +
-      ":" +
-      z(off % 60)
-    );
-  }
-
-  // function getEventClass(title) {
-  //   title = title.toLowerCase();
-  //   if (title.includes("public")) return "public";
-  //   if (title.includes("education")) return "education";
-  //   if (title.includes("government")) return "government";
-  //   return "";
-  // }
-
-  function createDayBox() {
+async function buildGrid(events) {
+  function createDayBox(events_info) {
     function appendHeader() {
       const now = new Date();
       const isToday = date.toDateString() === now.toDateString();
@@ -171,6 +163,15 @@ async function buildGrid() {
     }
 
     function appendEvents() {
+      function applyScrollAnimation(inner, overflow) {
+        const duration = Math.max(overflow * 0.5, 10); // tweak multiplier
+
+        inner.style.setProperty("--scroll-distance", `-${overflow}px`);
+        inner.style.setProperty("--scroll-duration", `${duration}s`);
+
+        inner.classList.add("events-bounce-scroll");
+      }
+
       function createEvent(event) {
         function getColor(calendar) {
           switch (calendar) {
@@ -212,32 +213,23 @@ async function buildGrid() {
         return summary;
       }
 
-      function applyScrollAnimation(inner, overflow) {
-        const duration = Math.max(overflow * 0.5, 10); // tweak multiplier
-
-        inner.style.setProperty("--scroll-distance", `-${overflow}px`);
-        inner.style.setProperty("--scroll-duration", `${duration}s`);
-
-        inner.classList.add("events-bounce-scroll");
-      }
-
       const eventsContainer = document.createElement("div");
       eventsContainer.className = "events";
 
       const inner = document.createElement("div");
       inner.className = "events-inner";
 
-      if (dayEvents.length === 0) {
+      if (events_info.length === 0) {
         let none = document.createElement("div");
         none.className = "no-events";
         none.textContent = "No events";
 
         inner.appendChild(none);
+      } else {
+        events_info.forEach((event) => {
+          inner.appendChild(createEvent(event));
+        });
       }
-
-      dayEvents.forEach((event) => {
-        inner.appendChild(createEvent(event));
-      });
 
       eventsContainer.appendChild(inner);
 
@@ -256,99 +248,83 @@ async function buildGrid() {
 
     let box = document.createElement("div");
     box.className = "day-box";
+    box.id = `box-${dateKey}`;
     box.appendChild(appendHeader());
     box.appendChild(appendEvents());
     grid.appendChild(box);
   }
 
-  const events = await fetchEvents();
+  function handleTags(event, dateKey) {
+    if (event.extendedProperties) {
+      if (
+        dateKey >= date.toISOString().split("T")[0] &&
+        event.extendedProperties.shared.tags.includes("Show on Board")
+      ) {
+        const div = document.createElement("div");
+        div.className = `upcoming-item`;
+
+        div.innerHTML = `
+      <div class="title">${event.summary}</div> 
+      <span class="event-date">${dateKey}</span>
+    `;
+
+        return div;
+      }
+    }
+  }
+
+  // function getTagsForEvent(event) {
+  //   const tags = [];
+  //   if (event.organizer && event.organizer.displayName) {
+  //     tags.push(event.organizer.displayName);
+  //   }
+
+  //   CONFIG.EVENT_TAG_KEYWORDS &&
+  //     Object.entries(CONFIG.EVENT_TAG_KEYWORDS).forEach(([tag, keywords]) => {
+  //       const text =
+  //         `${event.summary || ""} ${event.description || ""}`.toLowerCase();
+  //       if (keywords.some((kw) => text.includes(kw))) {
+  //         tags.push(tag);
+  //       }
+  //     });
+
+  //   return tags;
+  // }
+
+  const upcoming_events = document.getElementById("upcoming");
+  upcoming_events.innerHTML = `<h3>Member Opportunities</h3>`;
+
+  const inner = document.createElement("div");
+  inner.className = "events-inner";
+
+  const events_info = {};
+  let date = new Date();
+
+  events.forEach((e) => {
+    const dateKey = (e.start.dateTime || e.start.date).split("T")[0];
+
+    const tagElement = handleTags(e, dateKey);
+    if (tagElement) {
+      inner.appendChild(tagElement);
+    }
+
+    events_info[dateKey] = events_info[dateKey] || [];
+    events_info[dateKey].push(e);
+  });
 
   const grid = document.getElementById("schedule-grid");
   grid.innerHTML = "";
 
-  let date = new Date();
-  let dateKey = toISOLocal(date).split("T")[0];
-  let dayEvents = events.filter((e) => {
-    let start = e.start.dateTime || e.start.date;
-    return start.startsWith(dateKey);
-  });
-  const sunday = getLastSunday(date);
-
   for (let i = 0; i < TOTAL_DAYS; i++) {
-    date = new Date(sunday);
-    date.setDate(sunday.getDate() + i);
+    date = new Date(getLastSunday(new Date()));
+    date.setDate(date.getDate() + i);
 
     dateKey = toISOLocal(date).split("T")[0];
 
-    dayEvents = events.filter((e) => {
-      let start = e.start.dateTime || e.start.date;
-      return start.startsWith(dateKey);
-    });
-
-    createDayBox();
-  }
-}
-
-function buildWidget() {
-  async function fetchUpcoming() {
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.EVENTS_SHEET_ID}/values/${CONFIG.EVENTS_SHEET_RANGE}?key=${CONFIG.GOOGLE_API_KEY}`;
-
-    const res = await fetch(url);
-    const data = await res.json();
-
-    return data.values.map((row) => ({
-      title: row[0],
-      date: row[1],
-      description: row[2],
-      roles: row[3],
-      show: row[4],
-    }));
+    createDayBox(events_info[dateKey] || []);
   }
 
-  function renderUpcoming(items) {
-    const container = document.getElementById("upcoming");
-    container.innerHTML = "<h3>Member Opportunities</h3>";
-
-    const crewCallsContainer = document.createElement("div");
-    crewCallsContainer.className = "events";
-
-    const inner = document.createElement("div");
-    inner.className = "events-inner";
-
-    items.forEach((item) => {
-      const div = document.createElement("div");
-      div.className = `upcoming-item`;
-
-      if (item.show == "Yes") {
-        div.innerHTML = `
-      <div class="title">${item.title} • ${item.date}</div>
-      <div class="desc">${item.description}</div>
-      <div class="meta">${item.roles}</div>
-    `;
-
-        inner.appendChild(div);
-      }
-    });
-
-    if (inner.children.length > 5) {
-      inner.classList += " events-scroll";
-    }
-
-    crewCallsContainer.appendChild(inner);
-
-    const signUp = document.createElement("div");
-    signUp.className = "sign-up";
-
-    signUp.innerHTML += `<h3>Sign up Here</h3>
-    <img src="assets/crewcalls_qr.png" class="qr-code">`;
-
-    container.appendChild(crewCallsContainer);
-    container.appendChild(signUp);
-  }
-
-  fetchUpcoming().then((upcoming) => {
-    renderUpcoming(upcoming);
-  });
+  upcoming_events.appendChild(inner);
 }
 
 function buildTicker() {
@@ -468,10 +444,10 @@ function buildTicker() {
   setTickerSpeed();
 }
 
-function buildPage() {
+async function buildPage() {
+  const events = await fetchEvents();
   buildHeader();
-  buildGrid();
-  buildWidget();
+  buildGrid(events);
   buildTicker();
 }
 
