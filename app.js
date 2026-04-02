@@ -437,10 +437,12 @@ function buildTicker() {
     ticker.style.animation = `tickerScroll ${speed}s linear infinite`;
   }
 
-  didYouKnow();
   const ticker_content = document.getElementById("ticker-content");
+  if (ticker_content.parentElement.childNodes.length > 3) {
+    ticker_content.parentElement.lastElementChild.remove();
+  }
+  didYouKnow();
   ticker_content.parentElement.appendChild(ticker_content.cloneNode(true));
-
   setTickerSpeed();
 }
 
