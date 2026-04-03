@@ -126,11 +126,13 @@ main {
   flex-direction: column;
   align-self: flex-end;
   justify-content: right;
+  position: absolute;
+  bottom: 7px;
 }
 
 .upcoming .sign-up h3 {
   text-align: right;
-  font-size: 0.5vw;
+  font-size: 0.4vw;
   margin: auto;
   padding-bottom: 5px;
 }
