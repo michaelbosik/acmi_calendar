@@ -347,10 +347,17 @@ function buildTicker() {
 }
 
 async function buildPage() {
-  const events = await fetchEvents();
-  buildHeader();
-  buildGrid(events);
-  buildTicker();
+  try {
+    const events = await fetchEvents();
+    buildHeader();
+    buildGrid(events);
+    buildTicker();
+  } catch (err) {
+    console.log("Failed to fetch events", err);
+    const events = [];
+    sleep(1000);
+    buildPage();
+  }
 }
 
 const TOTAL_DAYS = 28;
