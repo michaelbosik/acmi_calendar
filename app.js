@@ -255,22 +255,25 @@ async function buildGrid(events) {
   }
 
   function handleTags(event, dateKey) {
-    if (event.extendedProperties) {
-      if (
-        dateKey >= date.toISOString().split("T")[0] &&
-        event.extendedProperties.shared.tags.includes("Show on Board")
-      ) {
-        const div = document.createElement("div");
-        div.className = `upcoming-item`;
+    const div = document.createElement("div");
+    const desc = event.description || "";
+    
+    if (dateKey >= date.toISOString().split("T")[0]) {
+      CONFIG.EVENT_TAG_KEYWORDS.MEMBERS_NEEDED.forEach((keyword) => {
+        if (div.innerHTML) return;
+        if (desc.toLowerCase().includes(keyword)) {
+          // const div = document.createElement("div");
+          div.className = `upcoming-item`;
 
-        div.innerHTML = `
+          div.innerHTML = `
       <div class="title">${event.summary}</div> 
       <span class="event-date">${dateKey}</span>
     `;
-
-        return div;
-      }
+        }
+      });
     }
+
+    return div;
   }
 
   const upcoming_events = document.getElementById("upcoming");
