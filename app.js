@@ -140,6 +140,7 @@ async function loadSchedule(date) {
         scheduleData = responses;
 
         renderGrid(responses, date);
+        renderEmbed(CHANNELS[0]);
     } catch (error) {
         console.error(error);
     }
@@ -491,19 +492,19 @@ function updateCurrentlyWatching(channelData) {
             item.end_unix.unix > nowUnix
         );
 
-    document.getElementById("currentlyChannel").textContent =
-        channelData.name.toUpperCase();
+    // document.getElementById("currentlyChannel").textContent =
+    //     channelData.name.toUpperCase();
 
     if (!currentItem) {
 
         document.getElementById("currentlyTitle").textContent =
             "No program currently airing";
 
-        document.getElementById("currentlyDescription").textContent =
-            "";
+        // document.getElementById("currentlyDescription").textContent =
+        //     "";
 
-        document.getElementById("currentlyTime").textContent =
-            "";
+        // document.getElementById("currentlyTime").textContent =
+        //     "";
 
         return;
     }
@@ -517,20 +518,20 @@ function updateCurrentlyWatching(channelData) {
     document.getElementById("currentlyTitle").textContent =
         title;
 
-    document.getElementById("currentlyDescription").textContent =
-        currentItem.metadata?.description || "";
+    // document.getElementById("currentlyDescription").textContent =
+    //     currentItem.metadata?.description || "";
 
     const start = new Date(currentItem.start_unix.unix * 1000);
     const end = new Date(currentItem.end_unix.unix * 1000);
 
-    document.getElementById("currentlyTime").textContent =
-        `${start.toLocaleTimeString([], {
-            hour: "numeric",
-            minute: "2-digit"
-        })} – ${end.toLocaleTimeString([], {
-            hour: "numeric",
-            minute: "2-digit"
-        })}`;
+    // document.getElementById("currentlyTime").textContent =
+    //     `${start.toLocaleTimeString([], {
+    //         hour: "numeric",
+    //         minute: "2-digit"
+    //     })} – ${end.toLocaleTimeString([], {
+    //         hour: "numeric",
+    //         minute: "2-digit"
+    //     })}`;
 }
 
 /* =========================================================
@@ -920,10 +921,6 @@ setInterval(rotateShift, 10 * 60000);
 
 loadSchedule(selectedDate);
 setInterval(() => loadSchedule(selectedDate), 30 * 60000);
-
-
-// Start the default live channel ONCE
-renderEmbed(CHANNELS[0]);
 
 // Update the currently-watching information,
 // but don't recreate the iframe.
