@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -9,67 +10,107 @@
     <link rel="stylesheet" href="styles.css" />
 
     <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&family=Dosis:wght@400;600&display=swap"
-      rel="stylesheet" />
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&family=Dosis:wght@400;600&display=swap"
+        rel="stylesheet" />
 
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-  </head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+</head>
 
-  <body>
+<body>
     <div class="background"></div>
 
     <header class="header">
-      <div class="logo-area">
-        <img src="assets/acmi-logo.png" class="logo" />
-        <div class="org-name">Arlington Community Media</div>
-      </div>
-
-      <div class="weather" id="weather">
-        <div class="weather-temp" id="weather-temp"></div>
-        <div class="weather-icon" id="weather-icon">
-          <i class="fa-solid fa-cloud"></i>
+        <div class="logo-area">
+            <img src="assets/acmi-logo.png" class="logo" />
+            <div class="org-name">Arlington Community Media</div>
         </div>
-      </div>
 
-      <div class="clock" id="clock"></div>
+        <div class="weather" id="weather">
+            <div class="weather-temp" id="weather-temp"></div>
+            <div class="weather-icon" id="weather-icon">
+                <i class="fa-solid fa-cloud"></i>
+            </div>
+        </div>
+
+        <div class="clock" id="clock"></div>
     </header>
 
     <main>
-      <div class="maingrid">
-        <div id="calendar" class="calendar">
-          <div class="weekdays">
-            <div>Sunday</div>
-            <div>Monday</div>
-            <div>Tuesday</div>
-            <div>Wednesday</div>
-            <div>Thursday</div>
-            <div>Friday</div>
-            <div>Saturday</div>
-          </div>
-          <div id="schedule-grid" class="schedule-grid"></div>
-        </div>
-        <div id="upcoming" class="upcoming events">
-        </div>
-      </div>
+
+        <section class="calendar-section">
+
+            <div class="maingrid">
+
+                <div id="calendar" class="calendar">
+
+                    <div class="weekdays">
+                        <div>Sunday</div>
+                        <div>Monday</div>
+                        <div>Tuesday</div>
+                        <div>Wednesday</div>
+                        <div>Thursday</div>
+                        <div>Friday</div>
+                        <div>Saturday</div>
+                    </div>
+
+                    <div id="calendar-grid" class="calendar-grid"></div>
+
+                </div>
+
+                <div id="upcoming" class="upcoming events">
+                </div>
+
+            </div>
+            <div class="live-view">
+                <div class="currently-watching" id="currentlyWatching">
+
+                    <div class="live-status">
+                        <span class="live-dot"></span>
+                        LIVE --
+
+                        <div class="currently-channel" id="currentlyChannel">
+                            PUBLIC
+                        </div>
+                    </div>
+
+                    <div class="currently-title" id="currentlyTitle">
+                        Currently Watching
+                    </div>
+
+                    <div class="currently-description" id="currentlyDescription">
+                    </div>
+
+                </div>
+                <div class="live-player" id="embedContainer"></div>
+                <div class="tv-schedule-grid" id="tvScheduleGrid">
+
+                    <div class="static-container" id="staticContainer"></div>
+
+                    <div class="scroll-container" id="scrollContainer"></div>
+
+                </div>
+
+            </div>
+
+        </section>
     </main>
 
     <footer class="ticker">
-      <div class="ticker-track" id="ticker-track">
-        <div class="ticker-content" id="ticker-content">
-          <span id="did-you-know"></span>
-          <span>Public, Education, and Goverment content available at
-            acmi.tv/watch
-          </span>
-          <span>Find us on Instagram @arlingtoncommunitymedia</span>
-          <span>Watch local sports broadcasts on YouTube @ACMiSports</span>
+        <div class="ticker-track" id="ticker-track">
+            <div class="ticker-content" id="ticker-content">
+                <span id="did-you-know"></span>
+                <span>Public, Education, and Goverment content available at
+                    acmi.tv/watch
+                </span>
+                <span>Find us on Instagram @arlingtoncommunitymedia</span>
+                <span>Watch local sports broadcasts on YouTube @ACMiSports</span>
+            </div>
         </div>
-      </div>
     </footer>
 
     <script src="config.js"></script>
     <script src="content.js"></script>
     <script src="app.js"></script>
-  </body>
+</body>
+
 </html>
