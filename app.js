@@ -446,6 +446,7 @@ function createTimeline(timelineStart) {
         ${time.toLocaleTimeString([], {
           hour: "numeric",
           minute: "2-digit",
+          hour12: true
         })}
       </div>
     `;

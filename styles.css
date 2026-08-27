@@ -1,191 +1,204 @@
 html {
-  cursor: none;
+    cursor: none;
 }
 
 body {
-  margin: 0;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: #111;
-  color: white;
-  font-family: Montserrat, sans-serif;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #111;
+    color: white;
+    font-family: Montserrat, sans-serif;
 }
 
 body.shift1 {
-  transform: translate(3px, 2px);
+    transform: translate(3px, 2px);
 }
+
 body.shift2 {
-  transform: translate(-3px, 2px);
+    transform: translate(-3px, 2px);
 }
+
 body.shift3 {
-  transform: translate(2px, -3px);
+    transform: translate(2px, -3px);
 }
+
 body.shift4 {
-  transform: translate(-2px, -2px);
+    transform: translate(-2px, -2px);
 }
 
 body {
-  transition: transform 2s ease;
+    transition: transform 2s ease;
 }
 
 .header {
-  display: flex;
-  flex: 0 0 auto;
-  justify-content: space-between;
-  align-items: center;
+    display: flex;
+    flex: 0 0 auto;
+    justify-content: space-between;
+    align-items: center;
 
-  padding: 30px 50px;
+    padding: 30px 50px;
 
-  border-bottom: 4px solid #73bf44;
+    border-bottom: 4px solid #73bf44;
 }
 
 .logo-area {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
 }
 
 .logo {
-  height: 60px;
+    height: 60px;
 }
 
 .org-name {
-  font-size: 28px;
-  font-weight: 600;
+    font-size: 28px;
+    font-weight: 600;
 }
 
 .clock {
-  font-size: 48px;
-  font-weight: 300;
+    font-size: 48px;
+    font-weight: 300;
 }
 
 .weather {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .weather-temp {
-  font-size: 48px;
-  font-weight: 300;
-  padding-right: 20px;
+    font-size: 48px;
+    font-weight: 300;
+    padding-right: 20px;
 }
 
 .weather-icon i {
-  font-size: 50px;
-  color: #ffffff;
+    font-size: 50px;
+    color: #ffffff;
 }
 
 .weather-icon i {
-  animation: floatIcon 6s ease-in-out infinite;
+    animation: floatIcon 6s ease-in-out infinite;
 }
 
 .fa-sun {
-  color: #ffd166;
+    color: #ffd166;
 }
+
 .fa-moon {
-  color: #9bb7ff;
+    color: #9bb7ff;
 }
+
 .fa-cloud {
-  color: #cfd8dc;
+    color: #cfd8dc;
 }
+
 .fa-cloud-rain {
-  color: #7ec8e3;
+    color: #7ec8e3;
 }
 
 @keyframes floatIcon {
-  0% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-6px);
-  }
-  100% {
-    transform: translateY(0px);
-  }
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-6px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
 }
 
 main {
-  padding: 40px;
-  height: 80vh;
+    padding: 40px;
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.mainrow {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
 }
 
 .maingrid {
-  width: 60%;
-  padding: 10px;
+    height: 50%;
+    width: 60%;
 }
 
 .sign-up {
-  width: 20%;
-  display: inline-flex;
-  flex-direction: column;
-  align-self: flex-end;
-  justify-content: right;
-  position: absolute;
-  bottom: 7px;
+    width: 20%;
+    display: inline-flex;
+    flex-direction: column;
+    align-self: flex-end;
+    justify-content: right;
+    position: absolute;
+    bottom: 7px;
 }
 
 .upcoming .sign-up h3 {
-  text-align: right;
-  font-size: 0.4vw;
-  margin: auto;
-  padding-bottom: 5px;
+    text-align: right;
+    font-size: 0.4vw;
+    margin: auto;
+    padding-bottom: 5px;
 }
 
 .qr-code {
-  border-radius: 1%;
+    border-radius: 1%;
 }
 
 .upcoming {
-  width: 20%;
-  height: 80%;
+    width: 20%;
+    height: 80%;
 
-  background: #1c1c1c;
+    background: #1c1c1c;
 
-  border-left: 5px solid #518aa8;
+    border-left: 5px solid #518aa8;
 
-  padding: 1.2vh;
-  margin: auto;
+    padding: 1.2vh;
+    margin: auto;
 
-  border-radius: 8px;
+    border-radius: 8px;
 
-  display: none;
-  flex-direction: column;
+    display: none;
+    flex-direction: column;
 
-  gap: 0.7vh;
-  overflow: hidden;
+    gap: 0.7vh;
+    overflow: hidden;
 }
 
 .upcoming h3 {
-  /* font-weight: 300; */
-  font-size: clamp(20px, 1vw, 30px);
-  color: #73bf44;
+    /* font-weight: 300; */
+    font-size: clamp(20px, 1vw, 30px);
+    color: #73bf44;
 }
 
 .upcoming-item {
-  padding: 0.3vh 0.4vw;
+    padding: 0.3vh 0.4vw;
 
-  border-radius: 0.4vh;
+    border-radius: 0.4vh;
 
-  background: #2a2a2a;
+    background: #2a2a2a;
 
-  /* border-left: 6px solid #73bf44; */
+    /* border-left: 6px solid #73bf44; */
 
-  font-weight: 300;
-  font-size: clamp(10px, 0.7vw, 20px);
+    font-weight: 300;
+    font-size: clamp(10px, 0.7vw, 20px);
 
-  border-left: 4px solid #518aa8;
+    border-left: 4px solid #518aa8;
 }
 
 .upcoming-item .title {
-  font-size: clamp(14px, 0.7vw, 26px);
-  font-weight: 600;
-  margin-bottom: 0.5vh;
+    font-size: clamp(14px, 0.7vw, 26px);
+    font-weight: 600;
+    margin-bottom: 0.5vh;
 
-  color: #73bf44;
+    color: #73bf44;
 }
 
 /* .upcoming-item .desc {
@@ -199,107 +212,111 @@ main {
 } */
 
 .calendar {
-  width: 100%;
+    width: 100%;
 }
 
 .weekdays {
-  display: grid;
-  width: 100%;
-  grid-template-columns: repeat(7, 1fr);
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(7, 1fr);
 
-  padding: 0 1vh;
+    padding: 0 1vh;
 
-  font-weight: 600;
-  font-size: clamp(14px, 1.2vw, 20px);
+    font-weight: 600;
+    font-size: clamp(14px, 1.2vw, 20px);
 
-  color: #73bf44;
+    color: #73bf44;
 
-  text-align: center;
+    text-align: center;
 }
 
 .calendar-grid {
-  top: 0;
-  left: 0;
+    top: 0;
+    left: 0;
 
-  width: 100%;
-  height: 20%;
+    width: 100%;
+    height: 20%;
 
-  display: grid;
+    display: grid;
 
-  grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: repeat(4, 1fr);
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(4, 1fr);
 
-  gap: 1vh;
-  padding: 1vh;
+    gap: 1vh;
+    padding: 1vh;
 
-  transition: opacity 1s ease;
+    transition: opacity 1s ease;
 }
 
 .day-box {
-  background: #1c1c1c;
-  border-top: 0.6vh solid #73bf44;
-  border-radius: 1vh;
-  padding: 1.2vh;
+    background: #1c1c1c;
+    border-top: 0.6vh solid #73bf44;
+    border-radius: 1vh;
+    padding: 1.2vh;
 
-  display: flex;
-  flex-direction: column;
+    height: 80px;
 
-  overflow: hidden;
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
 }
 
 .day-box.past {
-  opacity: 0.35;
+    opacity: 0.35;
 
-  filter: grayscale(0.6);
+    filter: grayscale(0.6);
 }
 
 .day-box.today {
-  border-top: 6px solid #e4a224;
+    border-top: 6px solid #e4a224;
 
-  box-shadow: 0 0 20px rgba(228, 162, 36, 0.5);
+    box-shadow: 0 0 20px rgba(228, 162, 36, 0.5);
 
-  animation: todayGlow 4s ease-in-out infinite;
+    animation: todayGlow 4s ease-in-out infinite;
 }
 
 .day-box.today .day-title {
-  font-weight: 700;
-  font-size: 1.2em;
+    font-weight: 700;
+    font-size: 1.2em;
 }
 
 @keyframes todayGlow {
-  0% {
-    box-shadow: 0 0 10px rgba(115, 191, 68, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 25px rgba(115, 191, 68, 0.8);
-  }
-  100% {
-    box-shadow: 0 0 10px rgba(115, 191, 68, 0.4);
-  }
+    0% {
+        box-shadow: 0 0 10px rgba(115, 191, 68, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 25px rgba(115, 191, 68, 0.8);
+    }
+
+    100% {
+        box-shadow: 0 0 10px rgba(115, 191, 68, 0.4);
+    }
 }
 
 .day-header {
-  font-size: clamp(14px, 0.7vw, 26px);
-  font-weight: 600;
-  margin-bottom: 0.5vh;
+    font-size: clamp(14px, 0.7vw, 26px);
+    font-weight: 600;
+    margin-bottom: 0.5vh;
 
-  color: #73bf44;
+    color: #73bf44;
 }
 
 .events {
-  position: relative;
+    position: relative;
 
-  overflow: hidden;
+    overflow: hidden;
 
-  flex: 1;
+    flex: 1;
 }
 
 .events-inner {
-  display: flex;
+    display: flex;
 
-  flex-direction: column;
+    flex-direction: column;
 
-  gap: 0.4vh;
+    gap: 0.4vh;
 }
 
 /* .events-scroll {
@@ -307,99 +324,99 @@ main {
 } */
 
 .events-bounce-scroll {
-  animation: scrollBounce var(--scroll-duration) ease-in-out infinite;
+    animation: scrollBounce var(--scroll-duration) ease-in-out infinite;
 }
 
 @keyframes scrollBounce {
-  0% {
-    transform: translateY(0);
-  }
+    0% {
+        transform: translateY(0);
+    }
 
-  10% {
-    transform: translateY(0);
-  }
+    10% {
+        transform: translateY(0);
+    }
 
-  50% {
-    transform: translateY(var(--scroll-distance));
-  }
+    50% {
+        transform: translateY(var(--scroll-distance));
+    }
 
-  60% {
-    transform: translateY(var(--scroll-distance));
-  }
+    60% {
+        transform: translateY(var(--scroll-distance));
+    }
 
-  100% {
-    transform: translateY(0);
-  }
+    100% {
+        transform: translateY(0);
+    }
 }
 
 .event {
-  padding: 0.3vh 0.4vw;
+    padding: 0.3vh 0.4vw;
 
-  border-radius: 0.4vh;
+    border-radius: 0.4vh;
 
-  background: #2a2a2a;
+    background: #2a2a2a;
 
-  /* border-left: 6px solid #73bf44; */
+    /* border-left: 6px solid #73bf44; */
 
-  font-weight: 300;
-  font-size: clamp(10px, 0.7vw, 20px);
+    font-weight: 300;
+    font-size: clamp(10px, 0.7vw, 20px);
 }
 
 .event.public {
-  border-left: 6px solid #a5629b;
+    border-left: 6px solid #a5629b;
 }
 
 .event.education {
-  border-left: 6px solid #e5a324;
+    border-left: 6px solid #e5a324;
 }
 
 .event.government {
-  border-left: 6px solid #518aa8;
+    border-left: 6px solid #518aa8;
 }
 
 .event-time {
-  color: #e4a224;
-  font-weight: 500;
-  margin-right: 6px;
+    color: #e4a224;
+    font-weight: 500;
+    margin-right: 6px;
 }
 
 .no-events {
-  opacity: 0.5;
-  font-style: italic;
-  font-weight: 300;
-  font-size: clamp(10px, 1.2vw, 20px);
+    opacity: 0.5;
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(10px, 1.2vw, 20px);
 }
 
 .background {
-  position: fixed;
-  top: 0;
-  left: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
 
-  width: 100%;
-  height: 100%;
+    width: 100%;
+    height: 100%;
 
-  background: linear-gradient(-45deg, #73bf44, #518aa8, #a5629b, #e4a224);
+    background: linear-gradient(-45deg, #73bf44, #518aa8, #a5629b, #e4a224);
 
-  background-size: 400% 400%;
+    background-size: 400% 400%;
 
-  animation: gradientMove 30s ease infinite;
+    animation: gradientMove 30s ease infinite;
 
-  z-index: -1;
+    z-index: -1;
 }
 
 .ticker {
-  position: fixed;
-  bottom: 0;
+    position: fixed;
+    bottom: 0;
 
-  width: 100%;
-  height: 45px;
+    width: 100%;
+    height: 45px;
 
-  background: #111;
-  border-top: 3px solid #73bf44;
+    background: #111;
+    border-top: 3px solid #73bf44;
 
-  overflow: hidden;
-  display: flex;
-  align-items: center;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
 }
 
 /* .ticker {
@@ -413,83 +430,81 @@ main {
 } */
 
 .ticker-track {
-  display: flex;
-  width: max-content;
+    display: flex;
+    width: max-content;
 }
 
 .ticker-content {
-  display: flex;
-  white-space: nowrap;
+    display: flex;
+    white-space: nowrap;
 }
 
 .ticker-content span {
-  margin-right: 80px;
+    margin-right: 80px;
 }
 
 @keyframes tickerScroll {
-  0% {
-    transform: translateX(0);
-  }
+    0% {
+        transform: translateX(0);
+    }
 
-  100% {
-    transform: translateX(-50%);
-  }
+    100% {
+        transform: translateX(-50%);
+    }
 }
 
 @keyframes gradientMove {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 @keyframes scrollEvents {
-  0% {
-    transform: translateY(0);
-  }
+    0% {
+        transform: translateY(0);
+    }
 
-  50% {
-    transform: translateY(-50%);
-  }
+    50% {
+        transform: translateY(-50%);
+    }
 
-  100% {
-    transform: translateY(0);
-  }
+    100% {
+        transform: translateY(0);
+    }
 }
 
 .day-box {
-  animation: fadeIn 0.6s ease;
+    animation: fadeIn 0.6s ease;
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 body {
-  margin: 0;
-  color: white;
-  font-family: Montserrat, sans-serif;
-}
-
-.calendar-section {
-  /* height: 50%; */
-  display: flex;
+    margin: 0;
+    color: white;
+    font-family: Montserrat, sans-serif;
 }
 
 .live-section {
-  display: flex;
+    display: flex;
 }
 
 .live-view {
@@ -572,8 +587,8 @@ body {
 }
 
 .castus-embed {
-  width: 100%;
-  height: auto;
+    width: 100%;
+    height: auto;
 }
 
 @media (max-width: 800px) {
@@ -592,128 +607,128 @@ body {
 }
 
 .tv-schedule-grid {
-  display: grid;
-  grid-template-areas:
-    "date-select air-times"
-    "channel-header-wrapper channel-content-wrapper";
+    display: grid;
+    grid-template-areas:
+        "date-select air-times"
+        "channel-header-wrapper channel-content-wrapper";
 
-  overflow: hidden;
-  height: 100%;
-  width: 100%;
+    overflow: hidden;
+    /* height: 100%;
+    width: 100%; */
 }
 
 .static-container {
-  overflow: hidden;
-  position: static;
+    overflow: hidden;
+    position: static;
 }
 
 .scroll-container {
-  overflow-x: scroll;
-  overflow-y: hidden;
+    overflow-x: scroll;
+    overflow-y: hidden;
 }
 
 .top-row {
-  top: 0;
-  height: 30px;
+    top: 0;
+    height: 30px;
 }
 
 .channel-header-wrapper {
-  grid-area: channel-header-wrapper;
+    grid-area: channel-header-wrapper;
 
-  overflow: hidden;
+    overflow: hidden;
 
-  background: #2c643a;
+    background: #2c643a;
 }
 
 .channel-content-wrapper {
-  grid-area: channel-content-wrapper;
-  /* overflow: scroll; */
+    grid-area: channel-content-wrapper;
+    /* overflow: scroll; */
 }
 
 .date-select {
-  grid-area: date-select;
+    grid-area: date-select;
 
-  display: flex;
-  text-align: center;
-  align-items: center;
-  justify-content: center;
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
 
-  background: #2c643a;
-  color: white;
+    background: #2c643a;
+    color: white;
 }
 
 .air-times {
-  grid-area: air-times;
-  display: flex;
-  /* overflow-x: scroll; */
+    grid-area: air-times;
+    display: flex;
+    /* overflow-x: scroll; */
 }
 
 .channel-header {
-  min-width: 140px;
-  font-size: 1.1rem;
-  padding-left: 10px;
-  padding-right: 10px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  justify-content: center;
-  text-align: center;
-  height: 78px;
+    min-width: 140px;
+    font-size: 1.1rem;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    justify-content: center;
+    text-align: center;
+    height: 78px;
 }
 
 .channel-content {
-  height: 78px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  margin: auto;
-  position: relative;
+    height: 78px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin: auto;
+    position: relative;
 }
 
 .channel-label {
-  color: #fff;
-  margin-bottom: 5px;
+    color: #fff;
+    margin-bottom: 5px;
 }
 
 .channel-icon img {
-  display: block;
-  margin: auto;
-  width: 100%;
-  max-width: 40px;
-  padding: 5px;
+    display: block;
+    margin: auto;
+    width: 100%;
+    max-width: 40px;
+    padding: 5px;
 }
 
 .channel-info-item {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 2px;
-  font-size: 0.7rem;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2px;
+    font-size: 0.7rem;
 }
 
 .channel-info-label {
-  color: #fff;
+    color: #fff;
 }
 
 .channel-info-value {
-  color: #fff;
-  font-weight: bold;
+    color: #fff;
+    font-weight: bold;
 }
 
 .watch-button {
-  display: inline-block;
-  padding: 6px 12px;
-  background-color: #0d6f40 !important;
-  color: white;
-  border-radius: 4px;
-  border: 1px solid white;
-  font-size: 0.8rem;
-  transition: background-color 0.2s ease;
-  cursor: pointer;
-  margin: 5px auto 0 auto;
-  position: relative;
-  top: -10px;
+    display: inline-block;
+    padding: 6px 12px;
+    background-color: #0d6f40 !important;
+    color: white;
+    border-radius: 4px;
+    border: 1px solid white;
+    font-size: 0.8rem;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+    margin: 5px auto 0 auto;
+    position: relative;
+    top: -10px;
 }
 
 .watch-button:hover {
-  background-color: #0b5e34 !important;
+    background-color: #0b5e34 !important;
 }
 
 .tv-schedule-grid .public {
@@ -729,16 +744,16 @@ body {
 }
 
 .time-slot {
-  /* width: 200px; */
-  flex-shrink: 0;
+    /* width: 200px; */
+    flex-shrink: 0;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-  border-left: 1px solid #444;
-  background: #0d6f40;
-  color: white;
+    border-left: 1px solid #444;
+    background: #0d6f40;
+    color: white;
 }
 
 .tv-schedule-grid .public-content .program-block {
@@ -754,59 +769,58 @@ body {
 }
 
 .tv-schedule-grid .public-content .program-block:hover {
-  background: #802164;
+    background: #802164;
 }
 
 .tv-schedule-grid .education-content .program-block:hover {
-  background: #bd6028;
+    background: #bd6028;
 }
 
 .tv-schedule-grid .government-content .program-block:hover {
-  background: #3a4a69;
+    background: #3a4a69;
 }
 
 .program-block {
-  top: 5px;
-  bottom: 5px;
-  box-sizing: border-box;
-  padding: 12px;
-  overflow: hidden;
+    top: 5px;
+    bottom: 5px;
+    box-sizing: border-box;
+    padding: 12px;
+    overflow: hidden;
 
-  display: inline-block;
-  position: absolute;
+    display: inline-block;
+    position: absolute;
 
-  border: 1px solid #444;
+    border: 1px solid #444;
 
-  background: #0d6f40;
+    background: #0d6f40;
 
-  transition: 0.2s ease;
+    transition: 0.2s ease;
 }
 
 .program-block.live::before {
-  content: "";
+    content: "";
 
-  position: absolute;
-  inset: 0;
+    position: absolute;
+    inset: 0;
 
-  transform-origin: left center;
+    transform-origin: left center;
 
-  animation: liveProgress linear forwards;
+    animation: liveProgress linear forwards;
 
-  pointer-events: none;
+    pointer-events: none;
 }
 
 .program-time {
-  color: #ffffff;
-  font-size: 0.8rem;
-  margin-bottom: 6px;
-  font-weight: bold;
+    color: #ffffff;
+    font-size: 0.8rem;
+    margin-bottom: 6px;
+    font-weight: bold;
 }
 
 .program-title {
-  font-size: 1rem;
-  font-weight: bold;
-  color: #fff;
-  line-height: 1.3;
-  margin-bottom: 6px;
-  text-overflow: ellipsis;
+    font-size: 0.9rem;
+    color: #fff;
+    line-height: 1.3;
+    margin-bottom: 6px;
+    text-overflow: ellipsis;
 }

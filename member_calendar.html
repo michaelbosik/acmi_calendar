@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>ACMi Calendar</title>
+
+    <style>
+
+        body {
+            margin: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: #111;
+            color: white;
+            font-family: Montserrat, sans-serif;
+        }
+
+        body.shift1 {
+            transform: translate(3px, 2px);
+        }
+
+        body.shift2 {
+            transform: translate(-3px, 2px);
+        }
+
+        body.shift3 {
+            transform: translate(2px, -3px);
+        }
+
+        body.shift4 {
+            transform: translate(-2px, -2px);
+        }
+
+        body {
+            transition: transform 2s ease;
+        }
+
+        main {
+            padding: 40px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+
+            padding: 0 1vh;
+
+            font-weight: 600;
+            font-size: clamp(14px, 1.2vw, 20px);
+
+            color: #73bf44;
+
+            text-align: center;
+        }
+
+        .calendar-grid {
+
+            display: grid;
+
+            grid-template-columns: repeat(7, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+
+            gap: 1vh;
+            padding: 1vh;
+
+            transition: opacity 1s ease;
+        }
+
+        .day-box {
+            background: #1c1c1c;
+            border-top: 0.6vh solid #73bf44;
+
+            min-height: 120px;
+            max-height: 150px;
+
+            border-radius: 1vh;
+            padding: 1.2vh;
+
+            display: flex;
+            flex-direction: column;
+
+            overflow: hidden;
+        }
+
+        .day-box.past {
+            opacity: 0.35;
+
+            filter: grayscale(0.6);
+        }
+
+        .day-box.today {
+            border-top: 6px solid #e4a224;
+
+            box-shadow: 0 0 20px rgba(228, 162, 36, 0.5);
+
+            animation: todayGlow 4s ease-in-out infinite;
+        }
+
+        .day-box.today .day-title {
+            font-weight: 700;
+            font-size: 1.2em;
+        }
+
+        @keyframes todayGlow {
+            0% {
+                box-shadow: 0 0 10px rgba(115, 191, 68, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 0 25px rgba(115, 191, 68, 0.8);
+            }
+
+            100% {
+                box-shadow: 0 0 10px rgba(115, 191, 68, 0.4);
+            }
+        }
+
+        .day-header {
+            font-size: clamp(14px, 0.7vw, 26px);
+            font-weight: 600;
+            margin-bottom: 0.5vh;
+
+            color: #73bf44;
+        }
+
+        .events {
+            position: relative;
+
+            overflow: hidden;
+
+            flex: 1;
+        }
+
+        .events-inner {
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 0.4vh;
+        }
+
+        .events-bounce-scroll {
+            animation: scrollBounce var(--scroll-duration) ease-in-out infinite;
+        }
+
+        @keyframes scrollBounce {
+            0% {
+                transform: translateY(0);
+            }
+
+            10% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(var(--scroll-distance));
+            }
+
+            60% {
+                transform: translateY(var(--scroll-distance));
+            }
+
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        .event {
+            padding: 0.3vh 0.4vw;
+
+            border-radius: 0.4vh;
+
+            background: #2a2a2a;
+
+            /* border-left: 6px solid #73bf44; */
+
+            font-weight: 300;
+            font-size: clamp(10px, 0.7vw, 20px);
+        }
+
+        .event.public {
+            border-left: 6px solid #a5629b;
+        }
+
+        .event.education {
+            border-left: 6px solid #e5a324;
+        }
+
+        .event.government {
+            border-left: 6px solid #518aa8;
+        }
+
+        .event-time {
+            color: #e4a224;
+            font-weight: 500;
+            margin-right: 6px;
+        }
+
+        .no-events {
+            opacity: 0.5;
+            font-style: italic;
+            font-weight: 300;
+            font-size: clamp(10px, 1.2vw, 20px);
+        }
+
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+
+            width: 100%;
+            height: 100%;
+
+            background: linear-gradient(-45deg, #73bf44, #518aa8, #a5629b, #e4a224);
+
+            background-size: 400% 400%;
+
+            animation: gradientMove 30s ease infinite;
+
+            z-index: -1;
+        }
+
+        @keyframes gradientMove {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        @keyframes scrollEvents {
+            0% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-50%);
+            }
+
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        .day-box {
+            animation: fadeIn 0.6s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&family=Dosis:wght@400;600&display=swap"
+        rel="stylesheet" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+</head>
+
+<body>
+    <div class="background"></div>
+
+    <main>
+
+        <section class="calendar-section">
+
+            <div class="maingrid">
+
+                <div id="calendar" class="calendar">
+
+                    <div class="weekdays">
+                        <div>Sunday</div>
+                        <div>Monday</div>
+                        <div>Tuesday</div>
+                        <div>Wednesday</div>
+                        <div>Thursday</div>
+                        <div>Friday</div>
+                        <div>Saturday</div>
+                    </div>
+
+                    <div id="calendar-grid" class="calendar-grid"></div>
+
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <script>
+        const CONFIG = {
+            GOOGLE_API_KEY: "AIzaSyDAtZOsLpDTTA23PKrylBisaLC9ZlS5fRU",
+            CALENDAR_IDS: {
+                ACMI_CALENDAR_ID: "c_e19c5b2f73f36390a89470c28a7b097b64e4eb055f8cccbabe2b523994747900@group.calendar.google.com",
+                HOLIDAY_CALENDAR_ID: "en.usa#holiday@group.v.calendar.google.com",
+            },
+            EVENTS_SHEET_ID: "1xa5sya5jADtJ_wGiYU1lV06CVOYfKmYKUnenKqMJWvE",
+            EVENTS_SHEET_RANGE: "CrewCalls!A2:E",
+            COLORS: {
+                green: "#73bf44",
+                red: "#ef4723",
+                purple: "#a5629b",
+                yellow: "#e4a224",
+                blue: "#518aa8",
+                white: "#ffffff",
+            },
+            EVENT_TAG_KEYWORDS: {
+                "NEWS": ["news", "press", "media"],
+                "SPORTS": ["sports", "game", "match", "tournament", "basketball", "football", "soccer", "baseball",
+                    "tennis", "lacrosse", "hockey"
+                ],
+                "MEMBERS_NEEDED": ["members needed", "volunteer", "help wanted", "crew call", "looking for"],
+                "INTERNAL": ["internal", "staff", "team", "private"],
+                "GOVERNMENT": ["government", "public", "city", "state", "federal", "committee", "council",
+                    "election"
+                ],
+            }
+        };
+
+        //Shift page by a few pixels to prevent burn
+        const shifts = ["shift1", "shift2", "shift3", "shift4"];
+
+        function rotateShift() {
+            document.body.classList.remove(...shifts);
+
+            const next = shifts[Math.floor(Math.random() * shifts.length)];
+
+            document.body.classList.add(next);
+        }
+
+        function toISOLocal(d) {
+            var z = (n) => ("0" + n).slice(-2);
+            var zz = (n) => ("00" + n).slice(-3);
+            var off = d.getTimezoneOffset();
+            var sign = off > 0 ? "-" : "+";
+            off = Math.abs(off);
+
+            return (
+                d.getFullYear() +
+                "-" +
+                z(d.getMonth() + 1) +
+                "-" +
+                z(d.getDate()) +
+                "T" +
+                z(d.getHours()) +
+                ":" +
+                z(d.getMinutes()) +
+                ":" +
+                z(d.getSeconds()) +
+                "." +
+                zz(d.getMilliseconds()) +
+                sign +
+                z((off / 60) | 0) +
+                ":" +
+                z(off % 60)
+            );
+        }
+
+        function getLastSunday(now) {
+            const d = new Date(now);
+            d.setDate(d.getDate() - d.getDay() - 7);
+            d.setHours(0, 0, 0, 0);
+            return d;
+        }
+
+        // Get events from configured calendars
+        async function fetchEvents() {
+            const now = new Date();
+            const sunday = getLastSunday(now).toISOString();
+            let events = [];
+
+            for (const [service, calendarID] of Object.entries(CONFIG.CALENDAR_IDS)) {
+                const url =
+                    `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarID)}/events?key=${CONFIG.GOOGLE_API_KEY}&timeMin=${sunday}&singleEvents=true&orderBy=startTime&maxResults=100`;
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.items) {
+                    events = events.concat(data.items);
+                }
+            }
+
+            return events;
+        }
+
+        async function buildGrid(events) {
+            function createDayBox(events_info) {
+                function appendHeader() {
+                    const now = new Date();
+                    const isToday = date.toDateString() === now.toDateString();
+                    const isPast = date < new Date(now.setHours(0, 0, 0, 0));
+                    let header = document.createElement("div");
+                    header.className = "day-header";
+                    header.textContent += date.toLocaleDateString([], {
+                        // weekday: "short",
+                        day: "numeric",
+                        month: "long",
+                    });
+
+                    if (isToday) {
+                        header.textContent += "\n- Today";
+                        box.classList.add("today");
+                    }
+                    if (isPast) {
+                        box.classList.add("past");
+                    }
+
+                    return header;
+                }
+
+                function appendEvents() {
+                    function applyScrollAnimation(inner, overflow) {
+                        const duration = Math.max(overflow * 0.5, 10); // tweak multiplier
+
+                        inner.style.setProperty("--scroll-distance", `-${overflow}px`);
+                        inner.style.setProperty("--scroll-duration", `${duration}s`);
+
+                        inner.classList.add("events-bounce-scroll");
+                    }
+
+                    function createEvent(event) {
+                        function getColor(calendar) {
+                            switch (calendar) {
+                                case "ACMi Members Calendar":
+                                    return CONFIG.COLORS.green;
+                                case "Holidays in United States":
+                                    return CONFIG.COLORS.purple;
+                                case "":
+                                    return CONFIG.COLORS.blue;
+                                case "Sports":
+                                    return CONFIG.COLORS.red;
+                                case "":
+                                    return CONFIG.COLORS.yellow;
+                                default:
+                                    return CONFIG.COLORS.white;
+                            }
+                        }
+
+                        let summary = document.createElement("div");
+                        let start = new Date(event.start.dateTime || event.start.date);
+
+                        summary.innerHTML = !event.start.dateTime ?
+                            `<span class="event-time">All Day</span>` :
+                            `<span class="event-time">${start.toLocaleTimeString("en-US", {
+              hour: "numeric",
+              minute: "numeric",
+              hour12: true,
+            })}</span>`;
+
+                        if (!event.organizer || !event.summary) {
+                            summary.className = "event hidden";
+                            summary.innerHTML += "No Event Details";
+                            summary.style = `border-left: 6px solid gray`;
+                        } else {
+                            summary.className = `event ${event.organizer.displayName}`;
+                            summary.innerHTML += `${event.summary}`;
+                            summary.style = `border-left: 6px solid ${getColor(event.organizer.displayName)};`;
+                        }
+                        return summary;
+                    }
+
+                    const eventsContainer = document.createElement("div");
+                    eventsContainer.className = "events";
+
+                    const inner = document.createElement("div");
+                    inner.className = "events-inner";
+
+                    if (events_info.length === 0) {
+                        let none = document.createElement("div");
+                        none.className = "no-events";
+                        // none.textContent = "No events";
+                        none.textContent = "";
+
+                        inner.appendChild(none);
+                    } else {
+                        events_info.forEach((event) => {
+                            inner.appendChild(createEvent(event));
+                        });
+                    }
+
+                    eventsContainer.appendChild(inner);
+
+                    requestAnimationFrame(() => {
+                        const containerHeight = eventsContainer.clientHeight;
+                        const contentHeight = inner.scrollHeight;
+
+                        if (contentHeight > containerHeight) {
+                            const overflow = contentHeight - containerHeight;
+                            applyScrollAnimation(inner, overflow);
+                        }
+                    });
+
+                    return eventsContainer;
+                }
+
+                let box = document.createElement("div");
+                box.className = "day-box";
+                box.id = `box-${dateKey}`;
+                box.appendChild(appendHeader());
+                box.appendChild(appendEvents());
+                grid.appendChild(box);
+            }
+
+            function handleTags(event, dateKey) {
+                const div = document.createElement("div");
+                const desc = event.description || "";
+
+                if (dateKey >= date.toISOString().split("T")[0]) {
+                    CONFIG.EVENT_TAG_KEYWORDS.MEMBERS_NEEDED.forEach((keyword) => {
+                        if (div.innerHTML) return;
+                        if (desc.toLowerCase().includes(keyword)) {
+                            // const div = document.createElement("div");
+                            div.className = `upcoming-item`;
+
+                            div.innerHTML = `
+      <div class="title">${event.summary}</div> 
+      <span class="event-date">${dateKey}</span>
+    `;
+                        }
+                    });
+                    return div;
+                }
+                return null;
+            }
+
+            const events_info = {};
+            let date = new Date();
+
+            events.forEach((e) => {
+                const dateKey = (e.start.dateTime || e.start.date).split("T")[0];
+
+                const tagElement = handleTags(e, dateKey);
+                if (tagElement) {
+                    // inner.appendChild(tagElement);
+                }
+
+                events_info[dateKey] = events_info[dateKey] || [];
+                events_info[dateKey].push(e);
+            });
+
+            const grid = document.getElementById("calendar-grid");
+            grid.innerHTML = "";
+
+            for (let i = 0; i < TOTAL_DAYS; i++) {
+                date = new Date(getLastSunday(new Date()));
+                date.setDate(date.getDate() + i);
+
+                dateKey = toISOLocal(date).split("T")[0];
+
+                createDayBox(events_info[dateKey] || []);
+            }
+
+        }
+
+        async function buildPage() {
+            try {
+                const events = await fetchEvents();
+                buildGrid(events);
+            } catch (err) {
+                console.log("Failed to fetch events", err);
+                const events = [];
+                sleep(1000);
+                buildPage();
+            }
+        }
+
+        const TOTAL_DAYS = 28;
+
+        buildPage();
+        setInterval(buildPage, 60000 * 30);
+
+        setInterval(rotateShift, 10 * 60000);
+    </script>
+</body>
+
+</html>
