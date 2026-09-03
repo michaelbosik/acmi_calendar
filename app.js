@@ -348,7 +348,8 @@ function createChannelContent(
             <div class="program-time">
                 ${startDate.toLocaleTimeString([], {
                     hour: "numeric",
-                    minute: "2-digit"
+                    minute: "2-digit",
+                    hour12: true
                 })}
             </div>
         `;
