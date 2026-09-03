@@ -267,8 +267,8 @@ function createChannelContent(
         const nowUnix = Math.floor(Date.now() / 1000);
 
         let title = item.announce ?
-            item.metadata?.title || item.name || "Local Announcements" :
-            "Local Announcements";
+            item.metadata?.title || item.name || "Community Bulletin Board" :
+            "Community Bulletin Board";
 
         if (title.includes(".mp4")) {
             title = title.split("/").pop().split(".mp4")[0];
@@ -513,8 +513,8 @@ function updateCurrentlyWatching(channelData) {
     const title = currentItem.announce ?
         currentItem.metadata?.title ||
         currentItem.name ||
-        "Local Announcements" :
-        "Local Announcements";
+        "Community Bulletin Board" :
+        "Community Bulletin Board";
 
     document.getElementById("currentlyTitle").textContent =
         title;
